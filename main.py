@@ -8,13 +8,16 @@ import config
 
 Form, Window = uic.loadUiType("MainForm.ui")
 Form_filtr, Window_filtr = uic.loadUiType("filtr.ui")
-Form_aht, Window_aht = uic.loadUiType("ex_aht.ui")
+Form_exit, Window_exit = uic.loadUiType("ex_aht.ui")
 db_name = 'database.db'
+cache = {"FOs": [], "regions": [], "cities": [], "universities": []}
 
-def get_data(db_name, table):
+
+def get_data(db_name, table=None, query="SELECT * FROM {}"):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
-    cursor.execute(f"SELECT * FROM {table}")
+    query = query.format(table) or query
+    cursor.execute(query)
     data = cursor.fetchall()
     conn.close()
     return data
@@ -52,7 +55,7 @@ def show_Tp_nir():
                 item = qtw.QTableWidgetItem(str(data[i][j]))
                 item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
                 form.NirViewWidget.setItem(i, j, item)
-
+    
     form.NirViewWidget.setHorizontalHeaderLabels(config.TP_NIR_HEADERS)
     for column, width in enumerate(config.NP_NIR_COLUMN_WIDTH):
         form.NirViewWidget.setColumnWidth(column, width)
@@ -110,11 +113,83 @@ def connect_db(db_name):
         return False
     return db
 
+
+###сработало
+def filter_by_FO():
+    global cache
+    FO = form_filtr.comboBoxFO.currentText()
+    if not cache['FOs']:
+        FOs = get_data(db_name, query="SELECT DISTINCT region FROM VUZ")
+    cache['FOs'] = [FO[0] for FO in FOs]
+    if FO not in cache['FOs']:
+        return
+    
+    regions = get_data(
+        db_name,
+        query=f"SELECT DISTINCT oblname FROM VUZ  WHERE region = '{FO}'")
+    if not cache['regions']:
+        cache['regions'] = [region[0] for region in regions]
+    form_filtr.comboBoxRegion.clear()
+    form_filtr.comboBoxRegion.addItems(cache['regions'])
+
+
+def filter_by_region():
+    global cache
+    region = form_filtr.comboBoxRegion.currentText()
+    if region not in cache['regions']:
+        return
+    
+    cities = get_data(
+        db_name, 
+        query=f"SELECT DISTINCT city FROM VUZ WHERE oblname = '{region}'")
+    if not cache['cities']:
+        cache['cities'] = [city[0] for city in cities]
+    form_filtr.comboBoxCity.clear()
+    form_filtr.comboBoxCity.addItems(cache['cities'])
+        
+
+
+def filter_by_city():
+    global cache
+    city = form_filtr.comboBoxCity.currentText()
+    if city not in cache['cities']:
+        return
+
+    universities = get_data(
+        db_name, 
+        query=f"SELECT DISTINCT z2 FROM VUZ WHERE city = '{city}'")
+    if not cache['universities']:
+        cache['universities'] = [university[0] for university in universities]
+    form_filtr.comboBoxUniversity.clear()
+    form_filtr.comboBoxUniversity.addItems(cache['universities'])
+
+
+def sort_selected():
+    item = form.comboBoxSort.currentText()
+    if item == "Сортировка по каждому столбцу":
+        form.NirViewWidget.setSortingEnabled(True)
+    elif item == "Сортировка по Убыванию Кода":
+        form.NirViewWidget.setSortingEnabled(False)
+        form.NirViewWidget.sortItems(0, QtCore.Qt.SortOrder.DescendingOrder)
+        # Тут надо реализовать сортировку по сумме кодов
+    elif item == "Сортировка по Увеличению Кода":
+        form.NirViewWidget.setSortingEnabled(False)
+        form.NirViewWidget.sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
+    else:
+        form.NirViewWidget.setSortingEnabled(False)
+
+
+def close_all():
+    window.close()
+    window_exit.close()
+    window_filtr.close()
+
+
+
 if not connect_db(db_name):
     sys.exit(-1)
 else:
     print('Connection OK')
-
 
 app = qtw.QApplication([])
 window = Window()
@@ -123,100 +198,27 @@ form_filtr = Form_filtr()
 form_filtr.setupUi(window_filtr)
 form = Form()
 form.setupUi(window)
-window_aht = Window_aht()
-form_aht = Form_aht()
-form_aht.setupUi(window_aht)
+window_exit = Window_exit()
+form_exit = Form_exit()
+form_exit.setupUi(window_exit)
 show_Tp_nir()
 show_Tp_fv()
 show_grntirub()
 show_VUZ()
 
-
 list_fed_n = ['']
-conn = sqlite3.connect(db_name)
-cursor = conn.cursor()
-cursor.execute("SELECT DISTINCT region FROM VUZ")
-list_fed = cursor.fetchall()
-conn.close()
+list_fed = get_data(db_name, query="SELECT DISTINCT region FROM VUZ")
 for i in range(len(list_fed)):
     list_fed_n.append(list_fed[i][0])
-form_filtr.comboBox.addItems(list_fed_n)
-conn.close()
-
-
-
-###сработало
-def filtr():
-    list_1_n = ['']
-    list_2_n = ['']
-    list_3_n = ['']
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-    cursor.execute("SELECT DISTINCT region FROM VUZ")
-    list_1 = cursor.fetchall()
-    region = form_filtr.comboBox.currentText()
-    for i in range(len(list_1)):
-        list_1_n.append(list_1[i][0])
-    #print(list_1_n)
-    for j in range(len(list_1_n)):
-        if region == list_1_n[j]:
-            cursor.execute(f"SELECT DISTINCT oblname FROM VUZ  WHERE region = '{region}'")
-            list_2 = cursor.fetchall()
-            #print(list_2)
-            for k in range(len(list_2)):
-                list_2_n.append(list_2[k][0])
-            form_filtr.comboBox_2.clear()
-            form_filtr.comboBox_2.addItems(list_2_n)
-
-
-
-def filtr_2():
-    oblname = form_filtr.comboBox_2.currentText()
-    print(oblname)
-    for x in range(len(list_2_n)):
-        if oblname == list_2_n[x]:
-            cursor.execute(f"SELECT DISTINCT city FROM VUZ  WHERE oblname = '{oblname}'")
-            list_3 = cursor.fetchall()
-            for p in range(len(list_3)):
-                list_3_n.append(list_3[p][0])
-            print(list_3_n)
-            form_filtr.comboBox_3.clear()
-            form_filtr.comboBox_3.addItems(list_3_n)
-
-    conn.close()
-
-
-def sort_selected():
-    item = form.comboBox.currentText()
-    if item == "Сортировка по каждому столбцу":
-        form.NirViewWidget.setSortingEnabled(True)
-    elif item == "Сортировка по Убыванию Кода":
-        form.NirViewWidget.setSortingEnabled(False)
-        #form.tableView_1.setSort('codvuz') # Тут надо реализовать сортировку по сумме кодов
-
-        form.NirViewWidget.sortItems(1, QtCore.Qt.DescendingOrder)
-    elif item == "Сортировка по Увеличению Кода":
-        form.NirViewWidget.setSortingEnabled(False)
-        form.NirViewWidget.sortItems(1, QtCore.Qt.AscendingOrder)
-    else:
-        form.NirViewWidget.setSortingEnabled(False)
-
-
-#form_filtr.comboBox_2.currentTextChanged.connect(filtr)
-form_filtr.comboBox.currentTextChanged.connect(filtr)
+form_filtr.comboBoxFO.addItems(list_fed_n)
+form_filtr.comboBoxFO.currentTextChanged.connect(filter_by_FO)
+form_filtr.comboBoxRegion.currentTextChanged.connect(filter_by_region)
+form_filtr.comboBoxCity.currentTextChanged.connect(filter_by_city)
 form.comboBoxSort.currentTextChanged.connect(sort_selected)
 form.filterButton.clicked.connect(window_filtr.show)
-
-def closeall():
-    window.close()
-    window_aht.close()
-    window_filtr.close()
-
-
-
 form_filtr.cancelButton.clicked.connect(window_filtr.close)
 window.show()
-form.exitButton.clicked.connect(window_aht.show)
-form_aht.agreeButton.clicked.connect(closeall)
-form_aht.cancelButton.clicked.connect(window_aht.close)
-app.exec()
+form.exitButton.clicked.connect(window_exit.show)
+form_exit.agreeButton.clicked.connect(close_all)
+form_exit.cancelButton.clicked.connect(window_exit.close)
+exit(app.exec())
