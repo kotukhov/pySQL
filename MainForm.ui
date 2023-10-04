@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1619</width>
-    <height>858</height>
+    <width>1384</width>
+    <height>842</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,7 +46,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -147,7 +147,7 @@
          <string>Сбросить фильтры</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label_1">
+       <widget class="QLabel" name="NirLabel">
         <property name="geometry">
          <rect>
           <x>0</x>
@@ -183,7 +183,7 @@
        <attribute name="title">
         <string>Финансирование</string>
        </attribute>
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="FinancialLabel">
         <property name="geometry">
          <rect>
           <x>0</x>
@@ -218,7 +218,7 @@
        <attribute name="title">
         <string>ГРНТИ</string>
        </attribute>
-       <widget class="QLabel" name="label_3">
+       <widget class="QLabel" name="GrntiLabel">
         <property name="geometry">
          <rect>
           <x>0</x>
@@ -253,7 +253,7 @@
        <attribute name="title">
         <string>ВУЗы</string>
        </attribute>
-       <widget class="QLabel" name="label_4">
+       <widget class="QLabel" name="VuzLabel">
         <property name="geometry">
          <rect>
           <x>0</x>
@@ -273,7 +273,7 @@
          <string>TextLabel</string>
         </property>
        </widget>
-       <widget class="QTableWidget" name="VuzTableView">
+       <widget class="QTableWidget" name="VuzViewWidget">
         <property name="geometry">
          <rect>
           <x>0</x>
@@ -324,7 +324,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1619</width>
+     <width>1384</width>
      <height>26</height>
     </rect>
    </property>
