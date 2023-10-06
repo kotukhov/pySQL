@@ -1,12 +1,20 @@
 import sys
 import sqlite3
+# from functools import wraps
 from PyQt6 import uic, QtCore
 from PyQt6 import QtWidgets as qtw
-from PyQt6.QtSql import QSqlDatabase
+from PyQt6.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
 
 import config
 
 db_name = 'database.db'
+
+
+def send_args_inside_func(func):
+    def wrapper(*args, **kwargs):
+        return lambda: func(*args, **kwargs)
+    
+    return wrapper
 
 
 def get_data(db_name, table=None, query="SELECT * FROM {}"):
@@ -17,6 +25,35 @@ def get_data(db_name, table=None, query="SELECT * FROM {}"):
     data = cursor.fetchall()
     conn.close()
     return data
+
+
+def get_headers(table):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM {table}")
+    cursor.fetchall()
+    data = [descr[0] for descr in cursor.description]
+    conn.close()
+    return data
+
+
+def new_get_data(table=None, query=None):
+    Query = QSqlQuery()
+    if not query and not table:
+        return None
+    query = f"SELECT * FROM {table}"
+    Query.exec(query)
+    model = QSqlTableModel()
+    model.setQuery(Query)
+    return model
+
+
+def show_data(table, query):
+    model = new_get_data(table, query)
+    view = qtw.QTableView()
+    view.setModel(model)
+    view.show()
+
 
 class Window():
     def __init__(self, ui) -> None:
@@ -98,24 +135,6 @@ class Window():
         return db
 
 
-    ###сработало
-
-
-    def sort_selected():
-        item = form.comboBoxSort.currentText()
-        if item == "Сортировка по каждому столбцу":
-            form.NirViewWidget.setSortingEnabled(True)
-        elif item == "Сортировка по Убыванию Кода":
-            form.NirViewWidget.setSortingEnabled(False)
-            form.NirViewWidget.sortItems(0, QtCore.Qt.SortOrder.DescendingOrder)
-            # Тут надо реализовать сортировку по сумме кодов
-        elif item == "Сортировка по Увеличению Кода":
-            form.NirViewWidget.setSortingEnabled(False)
-            form.NirViewWidget.sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
-        else:
-            form.NirViewWidget.setSortingEnabled(False)
-
-
 class MainWindow(Window):
     def __init__(self, ui, db_name) -> None:
         if not self.connect_db(db_name):
@@ -130,10 +149,12 @@ class MainWindow(Window):
 
         
 
-    def show_table(self, table, widgetname, title='test', headers=None, column_widths=None, data=None):
+    def show_table(self, table, widgetname, title='', headers=None,
+                   column_widths=None, data=None):
         # check if table exists in database
         if not data:
             data = get_data(self.db_name, table)
+
         getattr(self.form, f"{widgetname}ViewWidget").setRowCount(len(data))
         getattr(self.form, f"{widgetname}ViewWidget").setColumnCount(len(data[0]))
         for i in range(len(data)):
@@ -141,18 +162,45 @@ class MainWindow(Window):
                 item = qtw.QTableWidgetItem(str(data[i][j]))
                 item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
                 getattr(self.form, f"{widgetname}ViewWidget").setItem(i, j, item)
+
         if headers:
             getattr(self.form, f"{widgetname}ViewWidget").setHorizontalHeaderLabels(headers)
+
         if column_widths and len(column_widths) == len(data[0]):
             for column, width in enumerate(column_widths):
                 getattr(self.form, f"{widgetname}ViewWidget").setColumnWidth(column, width)
 
-        getattr(self.form, f"{widgetname}ViewWidget").setSortingEnabled(True)
-        getattr(self.form, f"{widgetname}Label").setText(title) # 'Информация о рубриках ГРНТИ', 'Информация о НИР'
+        sort_enabled = False if widgetname == "Nir" else True
+        getattr(self.form, f"{widgetname}ViewWidget").setSortingEnabled(sort_enabled)
+        getattr(self.form, f"{widgetname}Label").setText(title) 
 
 
+@send_args_inside_func
+def sort_selected(window: MainWindow):
+    item = window.form.comboBoxSort.currentText()
+    if item.endswith('Кода'):
+        if item == "Сортировка по Убыванию Кода":
+            order = QtCore.Qt.SortOrder.DescendingOrder
+        elif item == "Сортировка по Увеличению Кода":
+            order = QtCore.Qt.SortOrder.AscendingOrder
+        window.form.NirViewWidget.setSortingEnabled(False)
+        column_names = ', '.join(get_headers('Tp_nir')[2:])
+        data = get_data(db_name,
+                        query=f"""SELECT codvuz || rnw AS clmn,  {column_names} 
+                        FROM Tp_nir 
+                        ORDER BY codvuz, clmn""")
+        headers = ['Код + рнв ебень'] + list(config.TP_NIR_HEADERS[2:])
+        window.show_table('Tp_nir', 'Nir', 'Информация о НИР', data=data, headers=headers)
+        window.form.NirViewWidget.sortItems(0, order)
+    else:
+        sort_toggle = False if item == "Без сортировки" else True
+        window.show_table('Tp_nir', 'Nir', 'Информация о НИР', headers=config.TP_NIR_HEADERS,
+                            column_widths=config.TP_NIR_COLUMN_WIDTH)
+        window.form.NirViewWidget.setSortingEnabled(sort_toggle)
+        
 
     
+
 def close_all():
     main_window.window.close()
     filter_window.window.close()
@@ -160,7 +208,7 @@ def close_all():
 
 
 app = qtw.QApplication([])
-main_window = MainWindow('MainForm.ui', db_name)
+main_window = MainWindow('MainForm_layout.ui', db_name)
 filter_window = Window('filtr.ui')
 exit_window = Window('ex_aht.ui')
 # main_window.show_table('VUZ', 'Vuz')
@@ -183,7 +231,7 @@ filter_window.form.comboBoxCity.currentTextChanged.connect(filter_window.filter_
 filter_window.form.comboBoxUniversity.currentTextChanged.connect(filter_window.filter_by_university)
 filter_window.form.filterButton.clicked.connect(filter_window.apply_filter(main_window))
 
-# form.comboBoxSort.currentTextChanged.connect(sort_selected)
+main_window.form.comboBoxSort.currentTextChanged.connect(sort_selected(main_window))
 main_window.form.filterButton.clicked.connect(filter_window.window.show)
 filter_window.form.cancelButton.clicked.connect(filter_window.window.close)
 main_window.window.show()
