@@ -26,7 +26,7 @@ class Window():
         self.window = Window()
         self.form = Form()
         self.form.setupUi(self.window)
-        self.cache = {"FOs": [], "regions": [], "cities": [], "universities": []}
+        self.cache = {"FOs": [''], "regions": [''], "cities": [''], "universities": ['']}
         # window.show()
 
     def filter_by_FO(self):
@@ -75,6 +75,7 @@ class Window():
         self.university = university
 
     def apply_filter(self, main_window):
+
         def inner():
             data = get_data(main_window.db_name,
                             query=f"""SELECT Tp_nir.* 
@@ -83,10 +84,10 @@ class Window():
                             AND oblname = '{self.region}' 
                             AND city = '{self.city}'
                             AND Tp_nir.z2 = '{self.university}'""")
-            main_window.show_table('Tp_nir', 'Nir', 'Информация о НИР', config.TP_NIR_HEADERS,
-                                   config.TP_NIR_COLUMN_WIDTH, data)
-
+            main_window.show_table('Tp_nir', 'Информация о НИР',config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH, data)
+            main_window.form.resetFiltersButton.setEnabled(True)
         return inner
+
 
     def connect_db(self, db_name):
         db = QSqlDatabase.addDatabase('QSQLITE')
@@ -96,7 +97,6 @@ class Window():
             return False
         return db
 
-    ###сработало
 
     def sort_selected():
         item = form.comboBoxSort.currentText()
@@ -111,6 +111,11 @@ class Window():
             form.tableWidget.sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
         else:
             form.NtableWidget.setSortingEnabled(False)
+
+    def sbros(self):
+        self.form.comboBoxCity.clear()
+        self.form.comboBoxRegion.clear()
+        self.form.comboBoxUniversity.clear()
 
 
 class MainWindow(Window):
@@ -146,9 +151,9 @@ class MainWindow(Window):
         getattr(self.form, f"ViewWidget").setSortingEnabled(True)
         getattr(self.form, f"label").setText(title)  # 'Информация о рубриках ГРНТИ', 'Информация о НИР'
 
-
-
-
+    def resfil_but(self):
+        self.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
+        self.form.resetFiltersButton.setEnabled(False)
 
 def close_all():
     main_window.window.close()
@@ -179,23 +184,29 @@ main_window.form.Financialaction.triggered.connect(main_window.form.horizontalFr
 for FO in get_data(db_name, query="SELECT DISTINCT region FROM VUZ"):
     filter_window.cache['FOs'].append(FO[0])
 
+filter_window.form.resetButton.clicked.connect(filter_window.sbros)
 filter_window.form.comboBoxFO.addItems(filter_window.cache['FOs'])
 filter_window.form.comboBoxFO.currentTextChanged.connect(filter_window.filter_by_FO)
 filter_window.form.comboBoxRegion.currentTextChanged.connect(filter_window.filter_by_region)
 filter_window.form.comboBoxCity.currentTextChanged.connect(filter_window.filter_by_city)
 filter_window.form.comboBoxUniversity.currentTextChanged.connect(filter_window.filter_by_university)
 filter_window.form.filterButton.clicked.connect(filter_window.apply_filter(main_window))
-
+main_window.form.horizontalFrame.hide()
 # form.comboBoxSort.currentTextChanged.connect(sort_selected)
 main_window.form.filterButton.clicked.connect(filter_window.window.show)
 filter_window.form.cancelButton.clicked.connect(filter_window.window.close)
-main_window.window.show()
+main_window.window.showMaximized()
+main_window.form.resetFiltersButton.setEnabled(False)
 
-# main_window.form.comboBoxSort.hide()
-# main_window.form.FinancialViewWidget.hide()
-# main_window.form.horizontalFrame_2.hide()
+#main_window.form.resetFiltersButton.clicked.connect(lambda: main_window.show_table(
+    #'Tp_nir', 'Информация о НИР',config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
+
+main_window.form.resetFiltersButton.clicked.connect(main_window.resfil_but)
 
 main_window.form.Exaction.triggered.connect(exit_window.window.show)
+
+
+
 
 exit_window.form.agreeButton.clicked.connect(close_all)
 exit_window.form.cancelButton.clicked.connect(exit_window.window.close)
