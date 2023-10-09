@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1370</width>
+    <height>752</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTableWidget" name="ViewWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>1331</width>
+      <height>611</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QFrame" name="horizontalFrame">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>640</y>
+      <width>791</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QComboBox" name="comboBoxSort">
+       <item>
+        <property name="text">
+         <string>Без сортировки</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Сортировка по каждому столбцу</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Сортировка по Увеличению Кода</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Сортировка по Убыванию Кода</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="appendButton">
+       <property name="text">
+        <string>Добавить</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="changeButton">
+       <property name="text">
+        <string>Изменить</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="removeButton">
+       <property name="text">
+        <string>Удалить</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="filterButton">
+       <property name="text">
+        <string>Фильтровать</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="resetFiltersButton">
+       <property name="text">
+        <string>Сбросить фильтры</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>0</y>
+      <width>791</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Выберите &quot;Данные&quot; для отображения таблиц</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1370</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="Datamenu">
+    <property name="title">
+     <string>Данные</string>
+    </property>
+    <addaction name="Niraction"/>
+    <addaction name="Financialaction"/>
+    <addaction name="Grntiaction"/>
+    <addaction name="Vuzaction"/>
+   </widget>
+   <widget class="QMenu" name="Analmenu">
+    <property name="title">
+     <string>Анализ</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="Financialmenu">
+    <property name="title">
+     <string>Финансирование</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="Exmenu">
+    <property name="title">
+     <string>Выйти из программы</string>
+    </property>
+    <addaction name="Exaction"/>
+   </widget>
+   <addaction name="Datamenu"/>
+   <addaction name="Analmenu"/>
+   <addaction name="Financialmenu"/>
+   <addaction name="Exmenu"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="Niraction">
+   <property name="text">
+    <string>НИР</string>
+   </property>
+  </action>
+  <action name="Financialaction">
+   <property name="text">
+    <string>Финансирование</string>
+   </property>
+  </action>
+  <action name="Grntiaction">
+   <property name="text">
+    <string>ГРНТИ</string>
+   </property>
+  </action>
+  <action name="Vuzaction">
+   <property name="text">
+    <string>ВУЗы</string>
+   </property>
+  </action>
+  <action name="Exaction">
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
