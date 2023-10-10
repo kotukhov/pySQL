@@ -9,6 +9,13 @@ import config
 db_name = 'database.db'
 
 
+def send_args_inside_func(func):
+    def wrapper(*args, **kwargs):
+        return lambda: func(*args, **kwargs)
+
+    return wrapper
+
+
 def get_data(db_name, table=None, query="SELECT * FROM {}"):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
@@ -29,66 +36,6 @@ class Window():
         self.cache = {"FOs": [''], "regions": [''], "cities": [''], "universities": ['']}
         # window.show()
 
-    def filter_by_FO(self):
-        FO = self.form.comboBoxFO.currentText()
-        if not self.cache['FOs']:
-            FOs = get_data(db_name, query="SELECT DISTINCT region FROM VUZ")
-            self.cache['FOs'] = [FO[0] for FO in FOs]
-        if FO not in self.cache['FOs']:
-            return
-        self.FO = FO
-        regions = get_data(
-            db_name,
-            query=f"SELECT DISTINCT oblname FROM VUZ  WHERE region = '{FO}'")
-        self.cache['regions'] = [region[0] for region in regions]
-        self.form.comboBoxRegion.clear()
-        self.form.comboBoxRegion.addItems(self.cache['regions'])
-
-    def filter_by_region(self):
-        region = self.form.comboBoxRegion.currentText()
-        if region not in self.cache['regions']:
-            return
-        self.region = region
-        cities = get_data(
-            db_name,
-            query=f"SELECT DISTINCT city FROM VUZ WHERE oblname = '{region}'")
-        self.cache['cities'] = [city[0] for city in cities]
-        self.form.comboBoxCity.clear()
-        self.form.comboBoxCity.addItems(self.cache['cities'])
-
-    def filter_by_city(self):
-        city = self.form.comboBoxCity.currentText()
-        if city not in self.cache['cities']:
-            return
-        self.city = city
-        universities = get_data(
-            db_name,
-            query=f"SELECT DISTINCT z2 FROM VUZ WHERE city = '{city}'")
-        self.cache['universities'] = [university[0] for university in universities]
-        self.form.comboBoxUniversity.clear()
-        self.form.comboBoxUniversity.addItems(self.cache['universities'])
-
-    def filter_by_university(self):
-        university = self.form.comboBoxUniversity.currentText()
-        if university not in self.cache['universities']:
-            return
-        self.university = university
-
-    def apply_filter(self, main_window):
-
-        def inner():
-            data = get_data(main_window.db_name,
-                            query=f"""SELECT Tp_nir.* 
-                            FROM Tp_nir JOIN VUZ ON Tp_nir.codvuz = VUZ.codvuz
-                            WHERE region = '{self.FO}' 
-                            AND oblname = '{self.region}' 
-                            AND city = '{self.city}'
-                            AND Tp_nir.z2 = '{self.university}'""")
-            main_window.show_table('Tp_nir', 'Информация о НИР',config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH, data)
-            main_window.form.resetFiltersButton.setEnabled(True)
-        return inner
-
-
     def connect_db(self, db_name):
         db = QSqlDatabase.addDatabase('QSQLITE')
         db.setDatabaseName(db_name)
@@ -96,21 +43,6 @@ class Window():
             print('Не удалось подключиться к базе')
             return False
         return db
-
-
-    def sort_selected():
-        item = form.comboBoxSort.currentText()
-        if item == "Сортировка по каждому столбцу":
-            form.NirViewWidget.setSortingEnabled(True)
-        elif item == "Сортировка по Убыванию Кода":
-            form.tableWidget.setSortingEnabled(False)
-            form.NirViewWidget.sortItems(0, QtCore.Qt.SortOrder.DescendingOrder)
-            # Тут надо реализовать сортировку по сумме кодов
-        elif item == "Сортировка по Увеличению Кода":
-            form.tableWidget.setSortingEnabled(False)
-            form.tableWidget.sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
-        else:
-            form.NtableWidget.setSortingEnabled(False)
 
     def sbros(self):
         self.form.comboBoxCity.clear()
@@ -123,37 +55,151 @@ class MainWindow(Window):
         if not self.connect_db(db_name):
             sys.exit(-1)
 
-        print('Connection OK')
         self.db_name = db_name
         tables = get_data(db_name,
                           query="SELECT * FROM sqlite_master WHERE type='table'")
         self.tables = [t[1] for t in tables]
         super().__init__(ui)
 
-    def show_table(self, table, title='test', headers=None, column_widths=None, data=None):
+    def show_table(self, table, title='', headers=None, column_widths=None, data=None):
         # check if table exists in database
-        getattr(self.form, f"ViewWidget").show()
+        self.form.ViewWidget.show()
         if not data:
             data = get_data(self.db_name, table)
-        getattr(self.form, f"ViewWidget").setRowCount(len(data))
-        getattr(self.form, f"ViewWidget").setColumnCount(len(data[0]))
+        self.form.ViewWidget.setRowCount(len(data))
+        self.form.ViewWidget.setColumnCount(len(data[0]))
         for i in range(len(data)):
             for j in range(len(data[0])):
                 item = qtw.QTableWidgetItem(str(data[i][j]))
                 item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-                getattr(self.form, f"ViewWidget").setItem(i, j, item)
+                self.form.ViewWidget.setItem(i, j, item)
         if headers:
-            getattr(self.form, f"ViewWidget").setHorizontalHeaderLabels(headers)
+            self.form.ViewWidget.setHorizontalHeaderLabels(headers)
         if column_widths and len(column_widths) == len(data[0]):
             for column, width in enumerate(column_widths):
-                getattr(self.form, f"ViewWidget").setColumnWidth(column, width)
+                self.form.ViewWidget.setColumnWidth(column, width)
 
-        getattr(self.form, f"ViewWidget").setSortingEnabled(True)
-        getattr(self.form, f"label").setText(title)  # 'Информация о рубриках ГРНТИ', 'Информация о НИР'
+        self.form.ViewWidget.setSortingEnabled(False)
+        self.form.label.setText(title)  # 'Информация о рубриках ГРНТИ', 'Информация о НИР'
+
+    def sort_selected(self):
+        item = self.form.comboBoxSort.currentText()
+        if item.endswith('Кода'):
+            if item == "Сортировка по Убыванию Кода":
+                order = QtCore.Qt.SortOrder.DescendingOrder
+            elif item == "Сортировка по Увеличению Кода":
+                order = QtCore.Qt.SortOrder.AscendingOrder
+            self.form.ViewWidget.setSortingEnabled(False)
+            data = get_data(
+                db_name,
+                query=f"""SELECT codvuz || rnw AS clmn,  {', '.join(get_headers('Tp_nir')[2:])} 
+                        FROM Tp_nir 
+                        ORDER BY codvuz, clmn""")
+            headers = ['Код+РНВ'] + list(config.TP_NIR_HEADERS[2:])
+            self.show_table('Tp_nir', 'Информация о НИР', data=data, headers=headers)
+            self.form.ViewWidget.sortItems(0, order)
+        else:
+            sort_toggle = False if item == "Без сортировки" else True
+            self.show_table('Tp_nir', 'Информация о НИР', headers=config.TP_NIR_HEADERS,
+                            column_widths=config.TP_NIR_COLUMN_WIDTH)
+            self.form.ViewWidget.setSortingEnabled(sort_toggle)
 
     def resfil_but(self):
         self.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
         self.form.resetFiltersButton.setEnabled(False)
+
+
+class FilterWindow(Window):
+    def __init__(self, ui) -> None:
+        super().__init__(ui)
+        self.meta = {"FO": [""], "Region": [""], "City": [""], "University": [""]}
+        self.filtered_columns = dict(zip(["region", "oblname", "city", "VUZ.z2"],
+                                         self.meta))
+        self.query_template = """
+        SELECT DISTINCT {select_column} 
+        FROM Tp_nir JOIN VUZ ON Tp_nir.codvuz = VUZ.codvuz
+        WHERE {column} = "{value}" """
+
+        for data in get_data(db_name, query=f"SELECT DISTINCT {', '.join(self.filtered_columns)} FROM VUZ"):
+            self.meta['FO'].append(data[0])
+            self.meta['Region'].append(data[1])
+            self.meta['City'].append(data[2])
+            self.meta['University'].append(data[3])
+
+        self.meta = {k: sorted(set(v)) for k, v in self.meta.items()}
+        self.form.comboBoxFO.addItems(self.meta['FO'])
+        self.form.comboBoxRegion.addItems(self.meta['Region'])
+        self.form.comboBoxCity.addItems(self.meta['City'])
+        self.form.comboBoxUniversity.addItems(self.meta['University'])
+
+    def get_combobox_values(self, target_column):
+        query = []
+        for column, filter_level in self.filtered_columns.items():
+            if column == target_column:
+                break
+            value = getattr(self.form, f"comboBox{filter_level}").currentText()
+            if value:
+                query.append(self.query_template.format(column=column,
+                                                        value=value,
+                                                        select_column=target_column))
+
+        if query:
+            query = "\nINTERSECT\n".join(set(query))
+        else:
+            query = f"SELECT DISTINCT {target_column} FROM VUZ"
+
+        return sorted([element[0] for element in get_data(db_name, query=query)])
+
+    def fo_filter(self):
+        regions = self.get_combobox_values("oblname")
+        self.meta['Region'] = [""] + regions
+        self.form.comboBoxRegion.clear()
+        self.form.comboBoxRegion.addItems(self.meta['Region'])
+
+    def region_filter(self):
+        cities = self.get_combobox_values("city")
+        self.meta['City'] = [""] + cities
+        self.form.comboBoxCity.clear()
+        self.form.comboBoxCity.addItems(self.meta['City'])
+
+    def city_filter(self):
+        universities = self.get_combobox_values("VUZ.z2")
+        self.meta['University'] = [""] + universities
+        self.form.comboBoxUniversity.clear()
+        self.form.comboBoxUniversity.addItems(self.meta['University'])
+
+    @send_args_inside_func
+    def combobox_filter(self, target):
+        data = self.get_combobox_values(target)
+        filter_level = self.filtered_columns[target]
+        self.meta[filter_level] = [""] + data
+        getattr(self.form, f"comboBox{filter_level}").clear()
+        getattr(self.form,
+                f"comboBox{filter_level}").addItems(self.meta[filter_level])
+
+    @send_args_inside_func
+    def apply_filter(self, window: MainWindow):
+        query_template = "\n".join(["SELECT Tp_nir.*",
+                                    "FROM Tp_nir JOIN VUZ ON Tp_nir.codvuz = VUZ.codvuz",
+                                    "WHERE {column} = \"{value}\""])
+        query = []
+        for column, box_name in self.filtered_columns.items():
+            value = getattr(self.form, f"comboBox{box_name}").currentText()
+            if value:
+                query.append(query_template.format(column=column, value=value))
+
+        if not query:
+            return
+
+        data = get_data(window.db_name, query="\nINTERSECT\n".join(query))
+        window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS,
+                          config.TP_NIR_COLUMN_WIDTH, data)
+
+    def reset_combo_boxes(self):
+        for box_name in list(self.meta)[::-1]:
+            if getattr(self.form, f"comboBox{box_name}").currentIndex():
+                getattr(self.form, f"comboBox{box_name}").setCurrentIndex(0)
+
 
 def close_all():
     main_window.window.close()
@@ -161,52 +207,54 @@ def close_all():
     exit_window.window.close()
 
 
+def get_headers(table):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM {table}")
+    cursor.fetchall()
+    data = [descr[0] for descr in cursor.description]
+    conn.close()
+    return data
+
+
 app = qtw.QApplication([])
 main_window = MainWindow('MF.ui', db_name)
-filter_window = Window('filtr.ui')
+filter_window = FilterWindow('filtr.ui')
 exit_window = Window('ex_aht.ui')
 
-
-#
-main_window.form.Niraction.triggered.connect(lambda: main_window.show_table(
-    'Tp_nir', 'Информация о НИР',config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
+shadow_show_table = send_args_inside_func(main_window.show_table)
+main_window.form.Niraction.triggered.connect(shadow_show_table(
+    'Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
 main_window.form.Niraction.triggered.connect(main_window.form.horizontalFrame.show)
-main_window.form.Vuzaction.triggered.connect(lambda: main_window.show_table(
-    'VUZ', 'Информация о ВУЗах',config.VUZ_HEADERS, config.VUZ_COLUMN_WIDTH))
+main_window.form.Vuzaction.triggered.connect(shadow_show_table(
+    'VUZ', 'Информация о ВУЗах', config.VUZ_HEADERS, config.VUZ_COLUMN_WIDTH))
 main_window.form.Vuzaction.triggered.connect(main_window.form.horizontalFrame.hide)
-main_window.form.Grntiaction.triggered.connect(lambda: main_window.show_table(
-    'grntirub', 'Информация о ГРНТИ',config.GRNTI_HEADERS, config.GRNTI_COLUMN_WIDTH))
+main_window.form.Grntiaction.triggered.connect(shadow_show_table(
+    'grntirub', 'Информация о ГРНТИ', config.GRNTI_HEADERS, config.GRNTI_COLUMN_WIDTH))
 main_window.form.Grntiaction.triggered.connect(main_window.form.horizontalFrame.hide)
-main_window.form.Financialaction.triggered.connect(lambda: main_window.show_table(
-    'Tp_fv', 'Информация о Финансировании',config.TP_FV_HEADERS, config.TP_FV_COLUMN_WIDTH))
+main_window.form.Financialaction.triggered.connect(shadow_show_table(
+    'Tp_fv', 'Информация о Финансировании', config.TP_FV_HEADERS, config.TP_FV_COLUMN_WIDTH))
 main_window.form.Financialaction.triggered.connect(main_window.form.horizontalFrame.hide)
 
-for FO in get_data(db_name, query="SELECT DISTINCT region FROM VUZ"):
-    filter_window.cache['FOs'].append(FO[0])
-
-filter_window.form.resetButton.clicked.connect(filter_window.sbros)
-filter_window.form.comboBoxFO.addItems(filter_window.cache['FOs'])
-filter_window.form.comboBoxFO.currentTextChanged.connect(filter_window.filter_by_FO)
-filter_window.form.comboBoxRegion.currentTextChanged.connect(filter_window.filter_by_region)
-filter_window.form.comboBoxCity.currentTextChanged.connect(filter_window.filter_by_city)
-filter_window.form.comboBoxUniversity.currentTextChanged.connect(filter_window.filter_by_university)
+filter_window.form.comboBoxFO.currentTextChanged.connect(filter_window.combobox_filter("oblname"))
+filter_window.form.comboBoxRegion.currentTextChanged.connect(filter_window.combobox_filter("city"))
+filter_window.form.comboBoxCity.currentTextChanged.connect(filter_window.combobox_filter("VUZ.z2"))
 filter_window.form.filterButton.clicked.connect(filter_window.apply_filter(main_window))
+
 main_window.form.horizontalFrame.hide()
-# form.comboBoxSort.currentTextChanged.connect(sort_selected)
+main_window.form.comboBoxSort.currentTextChanged.connect(main_window.sort_selected)
 main_window.form.filterButton.clicked.connect(filter_window.window.show)
 filter_window.form.cancelButton.clicked.connect(filter_window.window.close)
+filter_window.form.resetButton.clicked.connect(filter_window.reset_combo_boxes)
 main_window.window.showMaximized()
 main_window.form.resetFiltersButton.setEnabled(False)
 
-#main_window.form.resetFiltersButton.clicked.connect(lambda: main_window.show_table(
-    #'Tp_nir', 'Информация о НИР',config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
+# main_window.form.resetFiltersButton.clicked.connect(lambda: main_window.show_table(
+# 'Tp_nir', 'Информация о НИР',config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
 
 main_window.form.resetFiltersButton.clicked.connect(main_window.resfil_but)
 
 main_window.form.Exaction.triggered.connect(exit_window.window.show)
-
-
-
 
 exit_window.form.agreeButton.clicked.connect(close_all)
 exit_window.form.cancelButton.clicked.connect(exit_window.window.close)
