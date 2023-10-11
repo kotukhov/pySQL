@@ -1,3 +1,4 @@
+import re
 import sys
 import sqlite3
 from PyQt6 import uic, QtCore
@@ -146,27 +147,9 @@ class FilterWindow(Window):
         if query:
             query = "\nINTERSECT\n".join(set(query))
         else:
-            query = f"SELECT DISTINCT {target_column} FROM VUZ"
+            query = f"SELECT DISTINCT {target_column} FROM VUZ JOIN Tp_nir ON Tp_nir.codvuz = VUZ.codvuz"
 
         return sorted([element[0] for element in get_data(db_name, query=query)])
-
-    def fo_filter(self):
-        regions = self.get_combobox_values("oblname")
-        self.meta['Region'] = [""] + regions
-        self.form.comboBoxRegion.clear()
-        self.form.comboBoxRegion.addItems(self.meta['Region'])
-
-    def region_filter(self):
-        cities = self.get_combobox_values("city")
-        self.meta['City'] = [""] + cities
-        self.form.comboBoxCity.clear()
-        self.form.comboBoxCity.addItems(self.meta['City'])
-
-    def city_filter(self):
-        universities = self.get_combobox_values("VUZ.z2")
-        self.meta['University'] = [""] + universities
-        self.form.comboBoxUniversity.clear()
-        self.form.comboBoxUniversity.addItems(self.meta['University'])
 
     @send_args_inside_func
     def combobox_filter(self, target):
@@ -177,13 +160,23 @@ class FilterWindow(Window):
         getattr(self.form,
                 f"comboBox{filter_level}").addItems(self.meta[filter_level])
 
+    def get_grnti_code(self):
+        code = self.form.lineEdit.text()
+        if not code:
+            return
+        minimal_pattern = r"\d{2}\.\d{2}(\.\d{2})?"
+        pattern = f"^{minimal_pattern}([;,]{minimal_pattern})?$"
+        if re.match(pattern, code):
+            return code
+        # warning label for user
+
     @send_args_inside_func
     def apply_filter(self, window: MainWindow):
         query_template = "\n".join(["SELECT Tp_nir.*",
                                     "FROM Tp_nir JOIN VUZ ON Tp_nir.codvuz = VUZ.codvuz",
                                     "WHERE {column} = \"{value}\""])
-        query = []
-        main_window.form.resetFiltersButton.setEnabled(True)
+        grnti = self.get_grnti_code()
+        query = [query_template.format(column="f10", value=grnti)] if grnti else []
         for column, box_name in self.filtered_columns.items():
             value = getattr(self.form, f"comboBox{box_name}").currentText()
             if value:
@@ -196,9 +189,8 @@ class FilterWindow(Window):
         window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS,
                           config.TP_NIR_COLUMN_WIDTH, data)
 
-
-
     def reset_combo_boxes(self):
+        self.form.lineEdit.clear()
         for box_name in list(self.meta)[::-1]:
             if getattr(self.form, f"comboBox{box_name}").currentIndex():
                 getattr(self.form, f"comboBox{box_name}").setCurrentIndex(0)
@@ -243,7 +235,6 @@ filter_window.form.comboBoxFO.currentTextChanged.connect(filter_window.combobox_
 filter_window.form.comboBoxRegion.currentTextChanged.connect(filter_window.combobox_filter("city"))
 filter_window.form.comboBoxCity.currentTextChanged.connect(filter_window.combobox_filter("VUZ.z2"))
 filter_window.form.filterButton.clicked.connect(filter_window.apply_filter(main_window))
-
 main_window.form.horizontalFrame.hide()
 main_window.form.comboBoxSort.currentTextChanged.connect(main_window.sort_selected)
 main_window.form.filterButton.clicked.connect(filter_window.window.show)
@@ -252,8 +243,8 @@ filter_window.form.resetButton.clicked.connect(filter_window.reset_combo_boxes)
 main_window.window.showMaximized()
 main_window.form.resetFiltersButton.setEnabled(False)
 
-# main_window.form.resetFiltersButton.clicked.connect(lambda: main_window.show_table(
-# 'Tp_nir', 'Информация о НИР',config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
+#main_window.form.resetFiltersButton.clicked.connect(lambda: main_window.show_table(
+    #'Tp_nir', 'Информация о НИР',config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
 
 main_window.form.resetFiltersButton.clicked.connect(main_window.resfil_but)
 
