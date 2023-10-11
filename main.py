@@ -121,7 +121,8 @@ class FilterWindow(Window):
         FROM Tp_nir JOIN VUZ ON Tp_nir.codvuz = VUZ.codvuz
         WHERE {column} = "{value}" """
 
-        for data in get_data(db_name, query=f"SELECT DISTINCT {', '.join(self.filtered_columns)} FROM VUZ"):
+        for data in get_data(db_name, query="\n".join([f"SELECT DISTINCT {', '.join(self.filtered_columns)}",
+                                                       "FROM VUZ JOIN Tp_nir ON VUZ.codvuz = Tp_nir.codvuz"])):
             self.meta['FO'].append(data[0])
             self.meta['Region'].append(data[1])
             self.meta['City'].append(data[2])
