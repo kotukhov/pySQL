@@ -189,6 +189,8 @@ class FilterWindow(Window):
         window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS,
                           config.TP_NIR_COLUMN_WIDTH, data)
 
+        window.form.resetFiltersButton.setEnabled(True)
+
     def reset_combo_boxes(self):
         self.form.lineEdit.clear()
         for box_name in list(self.meta)[::-1]:
@@ -235,16 +237,17 @@ filter_window.form.comboBoxFO.currentTextChanged.connect(filter_window.combobox_
 filter_window.form.comboBoxRegion.currentTextChanged.connect(filter_window.combobox_filter("city"))
 filter_window.form.comboBoxCity.currentTextChanged.connect(filter_window.combobox_filter("VUZ.z2"))
 filter_window.form.filterButton.clicked.connect(filter_window.apply_filter(main_window))
+
 main_window.form.horizontalFrame.hide()
 main_window.form.comboBoxSort.currentTextChanged.connect(main_window.sort_selected)
 main_window.form.filterButton.clicked.connect(filter_window.window.show)
 filter_window.form.cancelButton.clicked.connect(filter_window.window.close)
 filter_window.form.resetButton.clicked.connect(filter_window.reset_combo_boxes)
 main_window.window.showMaximized()
-main_window.form.resetFiltersButton.setEnabled(False)
 
-#main_window.form.resetFiltersButton.clicked.connect(lambda: main_window.show_table(
-    #'Tp_nir', 'Информация о НИР',config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
+main_window.form.resetFiltersButton.setEnabled(False)
+main_window.form.resetFiltersButton.clicked.connect(shadow_show_table(
+    'Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
 
 main_window.form.resetFiltersButton.clicked.connect(main_window.resfil_but)
 
