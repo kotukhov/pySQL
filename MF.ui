@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1614</width>
+    <height>886</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Управление организацией НИР</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Выберите &amp;quot;Данные&amp;quot; для отображения таблиц&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTableWidget" name="ViewWidget"/>
+    </item>
+    <item>
+     <widget class="QFrame" name="horizontalFrame">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QComboBox" name="comboBoxSort">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <item>
+          <property name="text">
+           <string>Без сортировки</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Сортировка по каждому столбцу</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Сортировка по Увеличению Кода</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Сортировка по Убыванию Кода</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="appendButton">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Добавить</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="changeButton">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Изменить</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="removeButton">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Удалить</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="filterButton">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Фильтровать</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="resetFiltersButton">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Сбросить фильтры</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1614</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="Datamenu">
+    <property name="title">
+     <string>Данные</string>
+    </property>
+    <addaction name="Niraction"/>
+    <addaction name="Financialaction"/>
+    <addaction name="Grntiaction"/>
+    <addaction name="Vuzaction"/>
+   </widget>
+   <widget class="QMenu" name="Analmenu">
+    <property name="title">
+     <string>Анализ</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="Financialmenu">
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="title">
+     <string>Финансирование</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="Exmenu">
+    <property name="title">
+     <string>Выйти из программы</string>
+    </property>
+    <addaction name="Exaction"/>
+   </widget>
+   <addaction name="Datamenu"/>
+   <addaction name="Analmenu"/>
+   <addaction name="Financialmenu"/>
+   <addaction name="Exmenu"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="Niraction">
+   <property name="text">
+    <string>НИР</string>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+  </action>
+  <action name="Financialaction">
+   <property name="text">
+    <string>Финансирование</string>
+   </property>
+  </action>
+  <action name="Grntiaction">
+   <property name="text">
+    <string>ГРНТИ</string>
+   </property>
+  </action>
+  <action name="Vuzaction">
+   <property name="text">
+    <string>ВУЗы</string>
+   </property>
+  </action>
+  <action name="Exaction">
+   <property name="text">
+    <string>Выход</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
