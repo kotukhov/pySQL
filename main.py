@@ -256,6 +256,7 @@ def delete_button(window: MainWindow):
         window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка удаления', message_text)
         window.form.message.show()
 
+
 def close_all():
     main_window.window.close()
     filter_window.window.close()
