@@ -12,5 +12,6 @@ GRNTI_COLUMN_WIDTH = (100, 550)
 TP_NIR_COLUMN_WIDTH = (80, 120, 120, 130, 140, 150, 180, 140, 100)
 TP_FV_COLUMN_WIDTH = (80, 130, 140, 150, 100)
 VUZ_COLUMN_WIDTH = (80, 130, 120, 130, 140, 100, 200, 140, 100, 700, 1000)
+DB_NAME = 'database.db'
 
 #widgetnames = ['Financial', 'Vuz', 'Grnti', 'Nir']
