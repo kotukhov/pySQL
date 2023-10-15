@@ -1,10 +1,21 @@
+import sqlite3
 import sys
 from PyQt6 import uic, QtCore
 from PyQt6 import QtWidgets as qtw
 from PyQt6.QtSql import QSqlDatabase
 
+import MF
 import config
 import helpers
+
+
+def connect_db(db_name):
+    db = QSqlDatabase.addDatabase('QSQLITE')
+    db.setDatabaseName(db_name)
+    if not db.open():
+        print('Не удалось подключиться к базе')
+        return False
+    return db
 
 
 class Window:
@@ -13,40 +24,40 @@ class Window:
         Form, Window = uic.loadUiType(ui)
         self.window = Window()
         self.form = Form()
+        self.last_query = ""
         self.form.setupUi(self.window)
         self.cache = {"FOs": [''], "regions": [''], "cities": [''], "universities": ['']}
         # window.show()
 
-    def connect_db(self, db_name):
-        db = QSqlDatabase.addDatabase('QSQLITE')
-        db.setDatabaseName(db_name)
-        if not db.open():
-            print('Не удалось подключиться к базе')
-            return False
-        return db
-
-    def sbros(self):
-        self.form.comboBoxCity.clear()
-        self.form.comboBoxRegion.clear()
-        self.form.comboBoxUniversity.clear()
+    def get_data(self, table=None, query="SELECT * \nFROM {}", log=True):
+        conn = sqlite3.connect(config.DB_NAME)
+        cursor = conn.cursor()
+        query = query.format(table) or query
+        cursor.execute(query)
+        data = cursor.fetchall()
+        conn.close()
+        if log:
+            self.last_query = query
+        return data
 
 
 class MainWindow(Window):
     def __init__(self, ui, db_name) -> None:
-        if not self.connect_db(db_name):
+        if not connect_db(db_name):
             sys.exit(-1)
-
+        # self.form = MF.Ui_MainWindow
         self.db_name = db_name
-        tables = helpers.get_data(db_name,
-                                  query="SELECT * FROM sqlite_master WHERE type='table'")
+        tables = self.get_data(query="SELECT * \nFROM sqlite_master \nWHERE type='table'")
         self.tables = [t[1] for t in tables]
         super().__init__(ui)
 
     def show_table(self, table, title='', headers=None, column_widths=None, data=None):
         # check if table exists in database
         self.form.ViewWidget.show()
+        # if table == "Tp_nir":
+        #     self.sort_selected()
         if not data:
-            data = helpers.get_data(self.db_name, table)
+            data = self.get_data(table)
         self.form.ViewWidget.setRowCount(len(data))
         self.form.ViewWidget.setColumnCount(len(data[0]))
         for i in range(len(data)):
@@ -61,27 +72,35 @@ class MainWindow(Window):
                 self.form.ViewWidget.setColumnWidth(column, width)
 
         self.form.ViewWidget.setSortingEnabled(False)
-        self.form.label.setText(title)  # 'Информация о рубриках ГРНТИ', 'Информация о НИР'
+        self.form.label.setText(title)
 
     def sort_selected(self):
         item = self.form.comboBoxSort.currentText()
-        if item == "Сортировка по Увеличению Кода":
-            self.form.ViewWidget.setSortingEnabled(False)
-            data = helpers.get_data(
-                self.db_name,
-                query=f"""SELECT * 
-                        FROM Tp_nir 
-                        ORDER BY codvuz, rnw""")
-            self.show_table('Tp_nir', 'Информация о НИР', data=data, headers=config.TP_NIR_HEADERS)
-            self.form.ViewWidget.sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
-        else:
-            sort_toggle = False if item == "Без сортировки" else True
-            self.show_table('Tp_nir', 'Информация о НИР', headers=config.TP_NIR_HEADERS,
-                            column_widths=config.TP_NIR_COLUMN_WIDTH)
+        query = self.last_query
+        if not query:
+            query = "SELECT * \nFROM Tp_nir"
+
+        if item == "Сортировка по потенциальному ключу":
+            sort_toggle = False
             self.form.ViewWidget.setSortingEnabled(sort_toggle)
+            if "GROUP BY" not in query:
+                query = "\n".join([query, "GROUP BY Tp_nir.codvuz, rnw"])
+            else:
+                query = "\n".join(query.split('\n')[:-1] + ["GROUP BY Tp_nir.codvuz, rnw"])
+        else:
+            if "GROUP BY" in query:
+                query = "\n".join(query.split('\n')[:-1])
+
+            sort_toggle = False if item == "Без сортировки" else True
+
+        self.show_table('Tp_nir', 'Информация о НИР', headers=config.TP_NIR_HEADERS,
+                        column_widths=config.TP_NIR_COLUMN_WIDTH,
+                        data=self.get_data(query=query, log=False))
+        self.form.ViewWidget.setSortingEnabled(sort_toggle)
 
     def reset_filters(self):
         self.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
+        self.form.comboBoxSort.setCurrentIndex(0)
         self.form.resetFiltersButton.setEnabled(False)
 
 
@@ -96,8 +115,8 @@ class FilterWindow(Window):
         FROM Tp_nir JOIN VUZ ON Tp_nir.codvuz = VUZ.codvuz
         WHERE {column} = "{value}" """
 
-        for data in helpers.get_data(config.DB_NAME, query="\n".join([f"SELECT DISTINCT {', '.join(self.filtered_columns)}",
-                                                               "FROM VUZ JOIN Tp_nir ON VUZ.codvuz = Tp_nir.codvuz"])):
+        for data in self.get_data(query="\n".join([f"SELECT DISTINCT {', '.join(self.filtered_columns)}",
+                                                   "FROM VUZ JOIN Tp_nir ON VUZ.codvuz = Tp_nir.codvuz"])):
             self.meta['FO'].append(data[0])
             self.meta['Region'].append(data[1])
             self.meta['City'].append(data[2])
@@ -123,9 +142,9 @@ class FilterWindow(Window):
         if query:
             query = "\nINTERSECT\n".join(set(query))
         else:
-            query = f"SELECT DISTINCT {target_column} FROM VUZ JOIN Tp_nir ON Tp_nir.codvuz = VUZ.codvuz"
+            query = f"SELECT DISTINCT {target_column} \nFROM VUZ JOIN Tp_nir ON Tp_nir.codvuz = VUZ.codvuz"
 
-        return sorted([element[0] for element in helpers.get_data(config.DB_NAME, query=query)])
+        return sorted([element[0] for element in self.get_data(query=query)])
 
     @helpers.send_args_inside_func
     def combobox_filter(self, target):
@@ -157,7 +176,7 @@ class FilterWindow(Window):
 
         if not queries:
             return
-        data = helpers.get_data(window.db_name, query="\nINTERSECT\n".join(queries))
+        data = window.get_data(query="\nINTERSECT\n".join(queries))
         window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS,
                           config.TP_NIR_COLUMN_WIDTH, data)
         window.form.resetFiltersButton.setEnabled(True)

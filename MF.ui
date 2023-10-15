@@ -52,12 +52,7 @@
          </item>
          <item>
           <property name="text">
-           <string>Сортировка по Увеличению Кода</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Сортировка по Убыванию Кода</string>
+           <string>Сортировка по потенциальному ключу</string>
           </property>
          </item>
         </widget>
@@ -133,7 +128,7 @@
      <x>0</x>
      <y>0</y>
      <width>1614</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="Datamenu">
