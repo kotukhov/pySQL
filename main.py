@@ -27,7 +27,7 @@ def get_data(db_name, table=None, query="SELECT * FROM {}"):
     return data
 
 
-class Window():
+class Window:
     def __init__(self, ui) -> None:
         # get all table names in self.tables
         Form, Window = uic.loadUiType(ui)
@@ -85,27 +85,22 @@ class MainWindow(Window):
 
     def sort_selected(self):
         item = self.form.comboBoxSort.currentText()
-        if item.endswith('Кода'):
-            if item == "Сортировка по Убыванию Кода":
-                order = QtCore.Qt.SortOrder.DescendingOrder
-            elif item == "Сортировка по Увеличению Кода":
-                order = QtCore.Qt.SortOrder.AscendingOrder
+        if item == "Сортировка по Увеличению Кода":
             self.form.ViewWidget.setSortingEnabled(False)
             data = get_data(
                 db_name,
-                query=f"""SELECT codvuz || rnw AS clmn,  {', '.join(get_headers('Tp_nir')[2:])} 
+                query=f"""SELECT * 
                         FROM Tp_nir 
-                        ORDER BY codvuz, clmn""")
-            headers = ['Код+РНВ'] + list(config.TP_NIR_HEADERS[2:])
-            self.show_table('Tp_nir', 'Информация о НИР', data=data, headers=headers)
-            self.form.ViewWidget.sortItems(0, order)
+                        ORDER BY codvuz, rnw""")
+            self.show_table('Tp_nir', 'Информация о НИР', data=data, headers=config.TP_NIR_HEADERS)
+            self.form.ViewWidget.sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
         else:
             sort_toggle = False if item == "Без сортировки" else True
             self.show_table('Tp_nir', 'Информация о НИР', headers=config.TP_NIR_HEADERS,
                             column_widths=config.TP_NIR_COLUMN_WIDTH)
             self.form.ViewWidget.setSortingEnabled(sort_toggle)
 
-    def resfil_but(self):
+    def reset_filters(self):
         self.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
         self.form.resetFiltersButton.setEnabled(False)
 
@@ -161,35 +156,30 @@ class FilterWindow(Window):
         getattr(self.form,
                 f"comboBox{filter_level}").addItems(self.meta[filter_level])
 
-    def get_grnti_code(self):
-        code = self.form.lineEdit.text()
-        if not code:
-            return
-        minimal_pattern = r"\d{2}\.\d{2}(\.\d{2})?"
-        pattern = f"^{minimal_pattern}([;,]{minimal_pattern})?$"
-        if re.match(pattern, code):
-            return code
-        # warning label for user
-
     @send_args_inside_func
     def apply_filter(self, window: MainWindow):
         query_template = "\n".join(["SELECT Tp_nir.*",
                                     "FROM Tp_nir JOIN VUZ ON Tp_nir.codvuz = VUZ.codvuz",
-                                    "WHERE {column} = \"{value}\""])
-        grnti = self.get_grnti_code()
-        query = [query_template.format(column="f10", value=grnti)] if grnti else []
-        for column, box_name in self.filtered_columns.items():
+                                    "WHERE {column} {sign} \"{value}\""])
+        grnti = self.form.lineEdit.text()
+        queries = []
+        if grnti.isdigit():
+            queries.append("\nUNION\n".join(
+                [query_template.format(column="f10", sign="LIKE", value=f"{grnti}%"),
+                 query_template.format(column="f10", sign="LIKE", value=f"%,{grnti}%"),
+                 query_template.format(column="f10", sign="LIKE", value=f"%;{grnti}%")]))
+
+        for column, box_name in sorted(self.filtered_columns.items()):
             value = getattr(self.form, f"comboBox{box_name}").currentText()
             if value:
-                query.append(query_template.format(column=column, value=value))
+                queries.append(query_template.format(column=column, sign="=", value=value))
+                break
 
-        if not query:
+        if not queries:
             return
-
-        data = get_data(window.db_name, query="\nINTERSECT\n".join(query))
+        data = get_data(window.db_name, query="\nINTERSECT\n".join(queries))
         window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS,
                           config.TP_NIR_COLUMN_WIDTH, data)
-
         window.form.resetFiltersButton.setEnabled(True)
 
     def reset_combo_boxes(self):
@@ -199,10 +189,10 @@ class FilterWindow(Window):
                 getattr(self.form, f"comboBox{box_name}").setCurrentIndex(0)
 
 
-def close_all():
-    main_window.window.close()
-    filter_window.window.close()
-    exit_window.window.close()
+@send_args_inside_func
+def close(*windows: Window):
+    for w in windows:
+        w.window.close()
 
 
 def get_headers(table):
@@ -215,45 +205,46 @@ def get_headers(table):
     return data
 
 
-app = qtw.QApplication([])
-main_window = MainWindow('MF.ui', db_name)
-filter_window = FilterWindow('filtr.ui')
-exit_window = Window('ex_aht.ui')
+def main():
+    app = qtw.QApplication([])
+    main_window = MainWindow('MF.ui', db_name)
+    filter_window = FilterWindow('filtr.ui')
+    exit_window = Window('ex_aht.ui')
 
-shadow_show_table = send_args_inside_func(main_window.show_table)
-main_window.form.Niraction.triggered.connect(shadow_show_table(
-    'Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
-main_window.form.Niraction.triggered.connect(main_window.form.horizontalFrame.show)
-main_window.form.Vuzaction.triggered.connect(shadow_show_table(
-    'VUZ', 'Информация о ВУЗах', config.VUZ_HEADERS, config.VUZ_COLUMN_WIDTH))
-main_window.form.Vuzaction.triggered.connect(main_window.form.horizontalFrame.hide)
-main_window.form.Grntiaction.triggered.connect(shadow_show_table(
-    'grntirub', 'Информация о ГРНТИ', config.GRNTI_HEADERS, config.GRNTI_COLUMN_WIDTH))
-main_window.form.Grntiaction.triggered.connect(main_window.form.horizontalFrame.hide)
-main_window.form.Financialaction.triggered.connect(shadow_show_table(
-    'Tp_fv', 'Информация о Финансировании', config.TP_FV_HEADERS, config.TP_FV_COLUMN_WIDTH))
-main_window.form.Financialaction.triggered.connect(main_window.form.horizontalFrame.hide)
+    shadow_show_table = send_args_inside_func(main_window.show_table)
+    main_window.form.Niraction.triggered.connect(shadow_show_table(
+        'Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
+    main_window.form.Niraction.triggered.connect(main_window.form.horizontalFrame.show)
+    main_window.form.Vuzaction.triggered.connect(shadow_show_table(
+        'VUZ', 'Информация о ВУЗах', config.VUZ_HEADERS, config.VUZ_COLUMN_WIDTH))
+    main_window.form.Vuzaction.triggered.connect(main_window.form.horizontalFrame.hide)
+    main_window.form.Grntiaction.triggered.connect(shadow_show_table(
+        'grntirub', 'Информация о ГРНТИ', config.GRNTI_HEADERS, config.GRNTI_COLUMN_WIDTH))
+    main_window.form.Grntiaction.triggered.connect(main_window.form.horizontalFrame.hide)
+    main_window.form.Financialaction.triggered.connect(shadow_show_table(
+        'Tp_fv', 'Информация о Финансировании', config.TP_FV_HEADERS, config.TP_FV_COLUMN_WIDTH))
+    main_window.form.Financialaction.triggered.connect(main_window.form.horizontalFrame.hide)
+    main_window.form.horizontalFrame.hide()
+    main_window.form.comboBoxSort.currentTextChanged.connect(main_window.sort_selected)
+    main_window.window.showMaximized()
+    main_window.form.resetFiltersButton.setEnabled(False)
+    main_window.form.resetFiltersButton.clicked.connect(shadow_show_table(
+        'Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
+    main_window.form.resetFiltersButton.clicked.connect(main_window.reset_filters)
 
-filter_window.form.comboBoxFO.currentTextChanged.connect(filter_window.combobox_filter("oblname"))
-filter_window.form.comboBoxRegion.currentTextChanged.connect(filter_window.combobox_filter("city"))
-filter_window.form.comboBoxCity.currentTextChanged.connect(filter_window.combobox_filter("VUZ.z2"))
-filter_window.form.filterButton.clicked.connect(filter_window.apply_filter(main_window))
+    main_window.form.filterButton.clicked.connect(filter_window.window.show)
+    filter_window.form.comboBoxFO.currentTextChanged.connect(filter_window.combobox_filter("oblname"))
+    filter_window.form.comboBoxRegion.currentTextChanged.connect(filter_window.combobox_filter("city"))
+    filter_window.form.comboBoxCity.currentTextChanged.connect(filter_window.combobox_filter("VUZ.z2"))
+    filter_window.form.filterButton.clicked.connect(filter_window.apply_filter(main_window))
+    filter_window.form.cancelButton.clicked.connect(filter_window.window.close)
+    filter_window.form.resetButton.clicked.connect(filter_window.reset_combo_boxes)
 
-main_window.form.horizontalFrame.hide()
-main_window.form.comboBoxSort.currentTextChanged.connect(main_window.sort_selected)
-main_window.form.filterButton.clicked.connect(filter_window.window.show)
-filter_window.form.cancelButton.clicked.connect(filter_window.window.close)
-filter_window.form.resetButton.clicked.connect(filter_window.reset_combo_boxes)
-main_window.window.showMaximized()
+    main_window.form.Exaction.triggered.connect(exit_window.window.show)
+    exit_window.form.cancelButton.clicked.connect(exit_window.window.close)
+    exit_window.form.agreeButton.clicked.connect(close(main_window, filter_window, exit_window))
+    return app.exec()
 
-main_window.form.resetFiltersButton.setEnabled(False)
-main_window.form.resetFiltersButton.clicked.connect(shadow_show_table(
-    'Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
 
-main_window.form.resetFiltersButton.clicked.connect(main_window.resfil_but)
-
-main_window.form.Exaction.triggered.connect(exit_window.window.show)
-
-exit_window.form.agreeButton.clicked.connect(close_all)
-exit_window.form.cancelButton.clicked.connect(exit_window.window.close)
-exit(app.exec())
+if __name__ == '__main__':
+    main()
