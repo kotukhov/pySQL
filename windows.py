@@ -97,17 +97,19 @@ class MainWindow(Window):
                         data=self.get_data(query=query, log=False))
         self.form.ViewWidget.setSortingEnabled(sort_toggle)
 
-    def reset_filters(self):
+    @helpers.send_args_inside_func
+    def reset_filters(self, window):
         self.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
         self.form.comboBoxSort.setCurrentIndex(0)
         self.form.resetFiltersButton.setEnabled(False)
+        window.reset_form()
 
 
 class FilterWindow(Window):
     def __init__(self, ui) -> None:
         super().__init__(ui)
         self.boxes_data = {"FO": [""], "Region": [""], "City": [""], "University": [""]}
-        self.filtered_columns = []
+        self.condition = []
         self.column2widget = dict(zip(["region", "oblname", "city", "VUZ.z2"],
                                       self.boxes_data))
         self.query_template = '\n'.join(["SELECT DISTINCT {select_column}",
@@ -155,6 +157,7 @@ class FilterWindow(Window):
 
     @helpers.send_args_inside_func
     def apply_filter(self, window: MainWindow):
+        self.condition = []
         query_template = "\n".join(["SELECT Tp_nir.*",
                                     "FROM Tp_nir JOIN VUZ ON Tp_nir.codvuz = VUZ.codvuz",
                                     "WHERE {column} {sign} \"{value}\""])
@@ -164,13 +167,15 @@ class FilterWindow(Window):
             queries.append("\nUNION\n".join(
                 [query_template.format(column="f10", sign="LIKE", value=f"{grnti}%"),
                  query_template.format(column="f10", sign="LIKE", value=f"%;{grnti}%")]))
+            self.condition.append(grnti)
 
         for column, box_name in sorted(self.column2widget.items()):
             value = getattr(self.form, f"comboBox{box_name}").currentText()
+            self.condition.append(value or None)
             if value:
                 queries.append(query_template.format(column=column, sign="=", value=value))
-                break
 
+        self.condition = self.condition[::-1]
         if not queries:
             return
         data = window.get_data(query="\nINTERSECT\n".join(queries))
@@ -179,7 +184,7 @@ class FilterWindow(Window):
         window.form.resetFiltersButton.setEnabled(True)
         self.window.hide()
 
-    def reset_combo_boxes(self):
+    def reset_form(self):
         self.form.lineEdit.clear()
         for box_name in list(self.boxes_data)[::-1]:
             if getattr(self.form, f"comboBox{box_name}").currentIndex():

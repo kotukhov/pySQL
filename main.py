@@ -42,7 +42,7 @@ def main():
     main_window.form.resetFiltersButton.clicked.connect(shadow_show_table('Tp_nir', 'Информация о НИР',
                                                                           config.TP_NIR_HEADERS,
                                                                           config.TP_NIR_COLUMN_WIDTH))
-    main_window.form.resetFiltersButton.clicked.connect(main_window.reset_filters)
+    main_window.form.resetFiltersButton.clicked.connect(main_window.reset_filters(filter_window))
 
     main_window.form.filterButton.clicked.connect(filter_window.window.show)
     filter_window.form.comboBoxFO.currentTextChanged.connect(filter_window.combobox_filter("oblname"))
@@ -50,7 +50,7 @@ def main():
     filter_window.form.comboBoxCity.currentTextChanged.connect(filter_window.combobox_filter("VUZ.z2"))
     filter_window.form.filterButton.clicked.connect(filter_window.apply_filter(main_window))
     filter_window.form.cancelButton.clicked.connect(filter_window.window.close)
-    filter_window.form.resetButton.clicked.connect(filter_window.reset_combo_boxes)
+    filter_window.form.resetButton.clicked.connect(filter_window.reset_form)
 
     main_window.form.Exaction.triggered.connect(exit_window.window.show)
     exit_window.form.cancelButton.clicked.connect(exit_window.window.close)
