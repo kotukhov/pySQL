@@ -3,8 +3,8 @@ import sys
 import sqlite3
 from PyQt6 import uic, QtCore
 from PyQt6 import QtWidgets as qtw
-from PyQt6.QtSql import QSqlDatabase
-from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtSql import QSqlDatabase, QSqlTableModel
+from PyQt6.QtWidgets import QMessageBox, QDialog, QMainWindow
 
 import config
 
@@ -33,6 +33,12 @@ def query_change_db(db_name, query):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
     cursor.execute(query)
+    if 'INSERT INTO' in query:
+        index = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        return index
+    
     conn.commit()
     conn.close()
 
@@ -220,47 +226,244 @@ class FilterWindow(Window):
                 getattr(self.form, f"comboBox{box_name}").setCurrentIndex(0)
 
 
-@send_args_inside_func     
-def deleteRow(Indexes, window: MainWindow):
-    """Вспомогательный метод удаления строки для delete_button"""
-    for index in Indexes:
-        window.form.ViewWidget.model().removeRow(index)
-    window.form.ViewWidget.model().submit()
+class MainWindowButtons(Window):
+    """Класс для кнопок главного окна: добавить, изменить"""
+    def __init__(self, ui):
+        super().__init__(ui)
 
-@send_args_inside_func
-def delete_button(window: MainWindow):
-    """Кнопка удаления строки."""
-    selected_rows = window.form.ViewWidget.selectionModel().selectedRows()
-    selected_indexes = [index.row() for index in selected_rows]
-    window.form.message = QMessageBox()
-    if len(selected_indexes) > 0:
-        window.form.message.setText("Вы уверены, что хотите удалить выделенные записи?")
-        window.form.message.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        if window.form.message.exec() == window.form.message.StandardButton.Yes:
-            stack = []
-            for index in selected_indexes:
-                print(selected_indexes)
-                window.form.ViewWidget.model().removeRow(index)
-                stack.append(get_rows_from_table(index, window.form.ViewWidget.model()))
-            window.form.ViewWidget.model().submit()
-            
-            for i in range(len(stack)):
-                query = f"DELETE FROM Tp_nir WHERE codvuz = '{stack[i][0]}' AND rnw = '{stack[i][1]}'"
-                query_change_db(db_name=db_name, query=query)
+
+    @send_args_inside_func
+    def open_window(self, main_window, flag: bool):
+        self.new_window = QDialog()
+        self.ui_window = add_window
+        self.ui_window.form.setupUi(self.new_window)
+        self.new_window.show()
+        if flag == True:
+            self.ui_window.form.agreeButton.clicked.connect(self.add_button)
         else:
-            message_text = 'Удаление отменено'
-            window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка удаления', message_text)
-            window.form.message.show()
-    else:
-        message_text = 'Не выбрана запись для удаления'
-        window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка удаления', message_text)
-        window.form.message.show()
+            selected_row = main_window.form.ViewWidget.selectionModel().selectedRows()
+            selected_index = [index.row() for index in selected_row]
+
+            if 0 < len(selected_index) < 2:
+
+                data_stack = get_rows_from_table(selected_index[0], main_window.form.ViewWidget.model())
+                if len(data_stack[4])>8:
+                    cod_grnti = data_stack[4][:9]
+                    cod_grnti_2 = data_stack[4][8:]
+                    self.ui_window.form.cod_grnti.setText(cod_grnti)
+                    self.ui_window.form.cod_grnti_2.setText(cod_grnti_2)
+
+                self.ui_window.form.cod_vuz.setEnabled(False)
+                self.ui_window.form.cod_vuz.setValue(int(data_stack[0]))
+                
+                self.ui_window.form.reg_number_nir.setDisabled(True)
+                self.ui_window.form.reg_number_nir.setText(data_stack[1])
+
+                self.ui_window.form.character_nir.setCurrentText(data_stack[2])
+
+                self.ui_window.form.socr_naming.setEnabled(False)
+                self.ui_window.form.socr_naming.setCurrentText(data_stack[3])
+                
+                self.ui_window.form.cod_grnti.setText(data_stack[4])
+                self.ui_window.form.ruk_nir.setText(data_stack[5])
+                self.ui_window.form.post.setText(data_stack[6])
+                self.ui_window.form.financial.setValue(int(data_stack[7]))
+                self.ui_window.form.naming_nir.setText(data_stack[8])
+                
+                self.ui_window.form.agreeButton.clicked.connect(self.edit_button(int(data_stack[7]), selected_index[0]))
+            else:
+                message_text = 'Не выбрана строка для редактирования или выбрано более одной!'
+                self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
+                self.ui_window.form.message.show()
+                self.new_window.close()
+                
+        self.ui_window.form.cancelButton.clicked.connect(self.new_window.close)  
+            
+
+    def add_button(self):
+        """Функция добавления строки."""
+
+        cod_vuz = self.ui_window.form.cod_vuz.value()
+        reg_number_nir = self.ui_window.form.reg_number_nir.text()
+        character_nir = self.ui_window.form.character_nir.currentText()
+        socr_naming = self.ui_window.form.socr_naming.currentText()
+        cod_grnti = self.ui_window.form.cod_grnti.text()
+        cod_grnti_2 = self.ui_window.form.cod_grnti_2.text()
+        ruk_nir = self.ui_window.form.ruk_nir.text()
+        post = self.ui_window.form.post.text()
+        financial = self.ui_window.form.financial.value()
+        naming_nir = self.ui_window.form.naming_nir.toPlainText()
+
+        error = 0
+        
+        if (reg_number_nir != '' and 
+            character_nir != '' and 
+            socr_naming != '' and
+            cod_grnti != '..' and 
+            ruk_nir != ' ..' and
+            post != '' and 
+            naming_nir != ''):
+
+            if cod_vuz <= 0:
+                message_text = 'Код ВУЗа не может быть меньше или равен нулю!'
+                self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
+                self.ui_window.form.message.show()
+                error = 1
+
+            data = get_data(db_name,
+                            query=f"""SELECT codvuz, rnw FROM Tp_nir""") 
+            set_cod_vuz_reg_number_nir = (cod_vuz, reg_number_nir)
+            if set_cod_vuz_reg_number_nir in data:
+                message_text = 'Связь код ВУЗа и рег.номера НИР не уникальна!'
+                self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
+                self.ui_window.form.message.show()
+                error = 1
+
+            if financial <= 0:
+                message_text = 'Значение планового финансирования не может быть меньше или равно нулю!'
+                self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
+                self.ui_window.form.message.show()
+                error = 1
+
+            if ((len(cod_grnti)<4 or ' ' in cod_grnti) or
+                (cod_grnti_2 != '..' and (len(cod_grnti_2)<4 or ' ' in cod_grnti_2))):
+                message_text = f"""Проверьте правильность написания кода ГРНТИ:\n
+                            1) Не должно быть пробелов в коде\n 
+                            2) Минимальный код состоит из четырех цифр
+                            """
+                self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
+                self.ui_window.form.message.show()
+                error = 1
+            
+            if config.dict_cod_vuz_socr_naming[cod_vuz] != socr_naming:
+                message_text = f'Данному коду ВУЗа соответсвует название: {config.dict_cod_vuz_socr_naming[cod_vuz]}'
+                self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
+                self.ui_window.form.message.show()
+                error = 1
+             
+            if error == 0:
+
+                if cod_grnti_2 != '..':
+                    cod_grnti = cod_grnti + ',' + cod_grnti_2
+
+                query_tp_nir = f"""INSERT INTO Tp_nir (codvuz, rnw, f1, z2, f10, f6, f7, f18, f2) 
+                    VALUES ({cod_vuz},'{reg_number_nir}','{character_nir}','{socr_naming}','{cod_grnti}', '{ruk_nir}', '{post}',{financial},'{naming_nir}');"""
+                index = query_change_db(db_name, query_tp_nir)
+
+                query_tp_fv = f"""
+                            UPDATE Tp_fv
+                            SET z3 = z3 + {financial}, numworks = numworks + 1
+                            WHERE codvuz = '{cod_vuz}';
+                            """
+                query_change_db(db_name, query_tp_fv)
+                main_window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
+                
+                self.new_window.close()
+                main_window.form.ViewWidget.selectRow(index-1)
+        else:
+            message_text = 'Заполните все поля!'
+            self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка заполнения полей', message_text)
+            self.ui_window.form.message.show()
+
+    @send_args_inside_func
+    def edit_button(self, fin0, index):
+        """Функция редактирования строки."""
+
+        cod_vuz = self.ui_window.form.cod_vuz.value()
+        reg_number_nir = self.ui_window.form.reg_number_nir.text()
+        character_nir = self.ui_window.form.character_nir.currentText()
+        cod_grnti = self.ui_window.form.cod_grnti.text()
+        cod_grnti_2 = self.ui_window.form.cod_grnti_2.text()
+        ruk_nir = self.ui_window.form.ruk_nir.text()
+        post = self.ui_window.form.post.text()
+        financial = self.ui_window.form.financial.value()
+        naming_nir = self.ui_window.form.naming_nir.toPlainText()
+
+        if (
+            character_nir != '' and 
+            cod_grnti != '..' and 
+            ruk_nir != ' ..' and
+            post != '' and 
+            naming_nir != ''):
+
+            if financial <= 0:
+                message_text = 'Значение планового финансирования не может быть меньше или равно нулю!'
+                self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
+                self.ui_window.form.message.show()
+
+            if financial > 0:
+                if cod_grnti_2 != '..':
+                    cod_grnti = cod_grnti + ',' + cod_grnti_2
+
+                query_tp_nir = f"""UPDATE Tp_nir 
+                                SET f1 = '{character_nir}', 
+                                    f10 = '{cod_grnti}', 
+                                    f6 = '{ruk_nir}',
+                                    f7 = '{post}',
+                                    f18 = {financial},
+                                    f2 =  '{naming_nir}'
+                                WHERE codvuz = '{cod_vuz}' AND rnw = '{reg_number_nir}';"""
+                query_change_db(db_name, query_tp_nir)
+                
+                if fin0 != financial:
+
+                    query_tp_fv = f"""
+                                UPDATE Tp_fv
+                                SET z3 = z3 - {fin0} + {financial}
+                                WHERE codvuz = '{cod_vuz}';
+                                """
+                    query_change_db(db_name, query_tp_fv)
+                main_window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
+                
+                self.new_window.close()
+                main_window.form.ViewWidget.selectRow(index)
+        else:
+            message_text = 'Заполните все поля!'
+            self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка заполнения полей', message_text)
+            self.ui_window.form.message.show()
+
+    def delete_button(self):
+        """Функция удаления строки."""
+
+        selected_rows = main_window.form.ViewWidget.selectionModel().selectedRows()
+        selected_indexes = [index.row() for index in selected_rows]
+        main_window.form.message = QMessageBox()
+        if len(selected_indexes) > 0:
+            main_window.form.message.setText("Вы уверены, что хотите удалить выделенные записи?")
+            main_window.form.message.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            if main_window.form.message.exec() == main_window.form.message.StandardButton.Yes:
+                stack = []
+                for index in selected_indexes:
+                    stack.append(get_rows_from_table(index, main_window.form.ViewWidget.model()))
+
+                for i in range(len(stack)):
+                    query_tp_nir = f"DELETE FROM Tp_nir WHERE codvuz = '{stack[i][0]}' AND rnw = '{stack[i][1]}';"
+                    query_change_db(db_name=db_name, query=query_tp_nir)
+
+                    query_tp_fv = f"""
+                                    UPDATE Tp_fv
+                                    SET z3 = z3 - {stack[i][7]}, numworks = numworks - 1
+                                    WHERE codvuz = '{stack[i][0]}';
+                                    """
+                    query_change_db(db_name=db_name, query=query_tp_fv)
+                    main_window.form.ViewWidget.model().removeRow(index)
+                    main_window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
+
+            else:
+                message_text = 'Удаление отменено'
+                main_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка удаления', message_text)
+                main_window.form.message.show()
+        else:
+            message_text = 'Не выбрана запись для удаления'
+            main_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка удаления', message_text)
+            main_window.form.message.show()
 
 
 def close_all():
     main_window.window.close()
     filter_window.window.close()
     exit_window.window.close()
+    add_window.window.close()
 
 
 def get_headers(table):
@@ -277,8 +480,7 @@ app = qtw.QApplication([])
 main_window = MainWindow('MF.ui', db_name)
 filter_window = FilterWindow('filtr.ui')
 exit_window = Window('ex_aht.ui')
-delete_window = Window('delete_button.ui')
-delete_messege_window = Window('message_delete.ui')
+add_window = MainWindowButtons('add_button.ui')
 
 shadow_show_table = send_args_inside_func(main_window.show_table)
 main_window.form.Niraction.triggered.connect(shadow_show_table(
@@ -317,5 +519,8 @@ main_window.form.Exaction.triggered.connect(exit_window.window.show)
 exit_window.form.agreeButton.clicked.connect(close_all)
 exit_window.form.cancelButton.clicked.connect(exit_window.window.close)
 
-main_window.form.removeButton.clicked.connect(delete_button(main_window))
+main_window.form.removeButton.clicked.connect(MainWindowButtons.delete_button)
+
+main_window.form.appendButton.clicked.connect(add_window.open_window(main_window, True))
+main_window.form.changeButton.clicked.connect(add_window.open_window(main_window, False))
 exit(app.exec())
