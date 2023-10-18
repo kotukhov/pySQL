@@ -325,8 +325,8 @@ class MainWindowButtons(Window):
                 self.ui_window.form.message.show()
                 error = 1
 
-            if ((len(cod_grnti)<4 or ' ' in cod_grnti) or
-                (cod_grnti_2 != '..' and (len(cod_grnti_2)<4 or ' ' in cod_grnti_2))):
+            if ((len(cod_grnti)<6 or ' ' in cod_grnti) or
+                (cod_grnti_2 != '..' and (len(cod_grnti_2)<6 or ' ' in cod_grnti_2))):
                 message_text = f"""Проверьте правильность написания кода ГРНТИ:\n
                             1) Не должно быть пробелов в коде\n 
                             2) Минимальный код состоит из четырех цифр
@@ -342,10 +342,14 @@ class MainWindowButtons(Window):
                 error = 1
              
             if error == 0:
+                if len(cod_grnti) == 6:
+                    cod_grnti = cod_grnti[:6]
 
                 if cod_grnti_2 != '..':
+                    if len(cod_grnti_2) == 6:
+                        cod_grnti_2 = cod_grnti_2[:6]
                     cod_grnti = cod_grnti + ',' + cod_grnti_2
-
+                
                 query_tp_nir = f"""INSERT INTO Tp_nir (codvuz, rnw, f1, z2, f10, f6, f7, f18, f2) 
                     VALUES ({cod_vuz},'{reg_number_nir}','{character_nir}','{socr_naming}','{cod_grnti}', '{ruk_nir}', '{post}',{financial},'{naming_nir}');"""
                 index = query_change_db(db_name, query_tp_nir)
@@ -379,6 +383,7 @@ class MainWindowButtons(Window):
         financial = self.ui_window.form.financial.value()
         naming_nir = self.ui_window.form.naming_nir.toPlainText()
 
+        error = 0
         if (
             character_nir != '' and 
             cod_grnti != '..' and 
@@ -390,9 +395,26 @@ class MainWindowButtons(Window):
                 message_text = 'Значение планового финансирования не может быть меньше или равно нулю!'
                 self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
                 self.ui_window.form.message.show()
+                error = 1
 
-            if financial > 0:
+            if ((len(cod_grnti)<6 or ' ' in cod_grnti) or
+                (cod_grnti_2 != '..' and (len(cod_grnti_2)<6 or ' ' in cod_grnti_2))):
+                message_text = f"""Проверьте правильность написания кода ГРНТИ:\n
+                            1) Не должно быть пробелов в коде\n 
+                            2) Минимальный код состоит из четырех цифр
+                            """
+                self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
+                self.ui_window.form.message.show()
+                error = 1
+
+            if error == 0:
+                
+                if len(cod_grnti) == 6:
+                    cod_grnti = cod_grnti[:6]
+
                 if cod_grnti_2 != '..':
+                    if len(cod_grnti_2) == 6:
+                        cod_grnti_2 = cod_grnti_2[:6]
                     cod_grnti = cod_grnti + ',' + cod_grnti_2
 
                 query_tp_nir = f"""UPDATE Tp_nir 
