@@ -8,9 +8,6 @@ def send_args_inside_func(func):
     return wrapper
 
 
-
-
-
 def get_headers(table, db_name):
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()

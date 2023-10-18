@@ -4,7 +4,6 @@ from PyQt6 import uic, QtCore
 from PyQt6 import QtWidgets as qtw
 from PyQt6.QtSql import QSqlDatabase
 
-import MF
 import config
 import helpers
 
@@ -107,30 +106,29 @@ class MainWindow(Window):
 class FilterWindow(Window):
     def __init__(self, ui) -> None:
         super().__init__(ui)
-        self.meta = {"FO": [""], "Region": [""], "City": [""], "University": [""]}
-        self.filtered_columns = dict(zip(["region", "oblname", "city", "VUZ.z2"],
-                                         self.meta))
-        self.query_template = """
-        SELECT DISTINCT {select_column} 
-        FROM Tp_nir JOIN VUZ ON Tp_nir.codvuz = VUZ.codvuz
-        WHERE {column} = "{value}" """
-
-        for data in self.get_data(query="\n".join([f"SELECT DISTINCT {', '.join(self.filtered_columns)}",
+        self.boxes_data = {"FO": [""], "Region": [""], "City": [""], "University": [""]}
+        self.filtered_columns = []
+        self.column2widget = dict(zip(["region", "oblname", "city", "VUZ.z2"],
+                                      self.boxes_data))
+        self.query_template = '\n'.join(["SELECT DISTINCT {select_column}",
+                                         "FROM Tp_nir JOIN VUZ ON Tp_nir.codvuz = VUZ.codvuz",
+                                         "WHERE {column} = \"{value}\""])
+        for data in self.get_data(query="\n".join([f"SELECT DISTINCT {', '.join(self.column2widget)}",
                                                    "FROM VUZ JOIN Tp_nir ON VUZ.codvuz = Tp_nir.codvuz"])):
-            self.meta['FO'].append(data[0])
-            self.meta['Region'].append(data[1])
-            self.meta['City'].append(data[2])
-            self.meta['University'].append(data[3])
+            self.boxes_data['FO'].append(data[0])
+            self.boxes_data['Region'].append(data[1])
+            self.boxes_data['City'].append(data[2])
+            self.boxes_data['University'].append(data[3])
 
-        self.meta = {k: sorted(set(v)) for k, v in self.meta.items()}
-        self.form.comboBoxFO.addItems(self.meta['FO'])
-        self.form.comboBoxRegion.addItems(self.meta['Region'])
-        self.form.comboBoxCity.addItems(self.meta['City'])
-        self.form.comboBoxUniversity.addItems(self.meta['University'])
+        self.boxes_data = {k: sorted(set(v)) for k, v in self.boxes_data.items()}
+        self.form.comboBoxFO.addItems(self.boxes_data['FO'])
+        self.form.comboBoxRegion.addItems(self.boxes_data['Region'])
+        self.form.comboBoxCity.addItems(self.boxes_data['City'])
+        self.form.comboBoxUniversity.addItems(self.boxes_data['University'])
 
     def get_combobox_values(self, target_column):
         query = []
-        for column, filter_level in self.filtered_columns.items():
+        for column, filter_level in self.column2widget.items():
             if column == target_column:
                 break
             value = getattr(self.form, f"comboBox{filter_level}").currentText()
@@ -149,11 +147,11 @@ class FilterWindow(Window):
     @helpers.send_args_inside_func
     def combobox_filter(self, target):
         data = self.get_combobox_values(target)
-        filter_level = self.filtered_columns[target]
-        self.meta[filter_level] = [""] + data
+        filter_level = self.column2widget[target]
+        self.boxes_data[filter_level] = [""] + data
         getattr(self.form, f"comboBox{filter_level}").clear()
         getattr(self.form,
-                f"comboBox{filter_level}").addItems(self.meta[filter_level])
+                f"comboBox{filter_level}").addItems(self.boxes_data[filter_level])
 
     @helpers.send_args_inside_func
     def apply_filter(self, window: MainWindow):
@@ -165,10 +163,9 @@ class FilterWindow(Window):
         if grnti.isdigit():
             queries.append("\nUNION\n".join(
                 [query_template.format(column="f10", sign="LIKE", value=f"{grnti}%"),
-                 query_template.format(column="f10", sign="LIKE", value=f"%,{grnti}%"),
                  query_template.format(column="f10", sign="LIKE", value=f"%;{grnti}%")]))
 
-        for column, box_name in sorted(self.filtered_columns.items()):
+        for column, box_name in sorted(self.column2widget.items()):
             value = getattr(self.form, f"comboBox{box_name}").currentText()
             if value:
                 queries.append(query_template.format(column=column, sign="=", value=value))
@@ -180,9 +177,10 @@ class FilterWindow(Window):
         window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS,
                           config.TP_NIR_COLUMN_WIDTH, data)
         window.form.resetFiltersButton.setEnabled(True)
+        self.window.hide()
 
     def reset_combo_boxes(self):
         self.form.lineEdit.clear()
-        for box_name in list(self.meta)[::-1]:
+        for box_name in list(self.boxes_data)[::-1]:
             if getattr(self.form, f"comboBox{box_name}").currentIndex():
                 getattr(self.form, f"comboBox{box_name}").setCurrentIndex(0)
