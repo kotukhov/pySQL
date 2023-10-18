@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AddButtonWidget</class>
+ <widget class="QDialog" name="AddButtonWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>618</width>
+    <height>559</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Код ВУЗа</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" colspan="2">
+    <widget class="QSpinBox" name="cod_vuz"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Рег. номер НИР</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" colspan="2">
+    <widget class="QLineEdit" name="reg_number_nir">
+     <property name="inputMask">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Характер НИР</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="2">
+    <widget class="QComboBox" name="character_nir">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="editable">
+      <bool>false</bool>
+     </property>
+     <property name="currentText">
+      <string/>
+     </property>
+     <item>
+      <property name="text">
+       <string/>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>П</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Ф</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Р</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Сокр. назв. ВУЗа</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="2">
+    <widget class="QComboBox" name="socr_naming">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="editable">
+      <bool>false</bool>
+     </property>
+     <property name="currentText">
+      <string/>
+     </property>
+     <item>
+      <property name="text">
+       <string/>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>АлтГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>АлтГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>АнгарГТА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Сев(Аркт)ФУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>БалтГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>БелГТхнУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>БратГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>БрянГИТА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВолгГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВолгГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВологГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВорГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВорГАСУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВорГЛТА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВорГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВорГУИТ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВСГУТиУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РГУНГ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ГУУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ДагГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ДагГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ДВГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ИвГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ИвГЭУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ИвГТА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ИвГХТхнУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ИркГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КБГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КазНИТУ-КАИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КазНИТхнУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Каз(Прив)ФУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КазГАСУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>БалтФУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КалмГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КамГИЭА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КемТИПП</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВятГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КоврГТА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КнАГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КострГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КубГТхнУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СибФУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ГУЦМиЗ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КузГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЮЗГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЛипГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МарГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПовГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МордГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МАМИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГУДиТ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГУПищП</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГУПБио</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РГГРУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГТекстУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МАИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГИндУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МАРХИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГВМетИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МАДИ</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Код ГРНТИ</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="cod_grnti">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::ImhDigitsOnly</set>
+     </property>
+     <property name="inputMask">
+      <string>00.00.00</string>
+     </property>
+     <property name="maxLength">
+      <number>8</number>
+     </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
+     <property name="dragEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="2">
+    <widget class="QLineEdit" name="cod_grnti_2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::ImhDigitsOnly</set>
+     </property>
+     <property name="inputMask">
+      <string>00.00.00</string>
+     </property>
+     <property name="maxLength">
+      <number>8</number>
+     </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
+     <property name="dragEnabled">
+      <bool>false</bool>
+     </property>
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Руководитель НИР</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1" colspan="2">
+    <widget class="QLineEdit" name="ruk_nir">
+     <property name="inputMask">
+      <string>AAAAAAAAAAAAAAAAAAAAA A.A.</string>
+     </property>
+     <property name="text">
+      <string> ..</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Должность руководителя</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1" colspan="2">
+    <widget class="QLineEdit" name="post"/>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="label_8">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>План. финансирование</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1" colspan="2">
+    <widget class="QSpinBox" name="financial">
+     <property name="maximum">
+      <number>100000000</number>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="label_9">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Наименование НИР</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1" colspan="2">
+    <widget class="QTextBrowser" name="naming_nir">
+     <property name="readOnly">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="QPushButton" name="agreeButton">
+     <property name="text">
+      <string>Ок</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="2">
+    <widget class="QPushButton" name="cancelButton">
+     <property name="text">
+      <string>Отмена</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
