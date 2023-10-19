@@ -38,6 +38,12 @@ class Window:
             self.last_query = query
         return data
 
+    @staticmethod
+    @helpers.send_args_inside_func
+    def close(*windows):
+        for w in windows:
+            w.window.close()
+
 
 class MainWindow(Window):
     def __init__(self, ui) -> None:
@@ -51,8 +57,9 @@ class MainWindow(Window):
     def show_table(self, table, title='', headers=None, column_widths=None, data=None):
         # check if table exists in database
         self.form.ViewWidget.show()
-        # if table == "Tp_nir":
-        #     self.sort_selected()
+        if table != "Tp_nir":
+            sort_toggle = False
+            self.form.ViewWidget.setSortingEnabled(sort_toggle)
         if not data:
             data = self.get_data(table)
         self.form.ViewWidget.setRowCount(len(data))
@@ -276,7 +283,7 @@ class MainWindowButtons(Window):
             for key, value in dict_items:
                 if value == socr_naming:
                     cod_vuz = key
-            data = helpers.get_data(query=f"""SELECT codvuz, rnw FROM Tp_nir""")
+            data = self.get_data(query=f"""SELECT codvuz, rnw FROM Tp_nir""")
             set_cod_vuz_reg_number_nir = (cod_vuz, reg_number_nir)
             if set_cod_vuz_reg_number_nir in data:
                 message_text = 'Связь код ВУЗа и рег.номера НИР не уникальна!'
