@@ -9,7 +9,7 @@ if __name__ == '__main__':
     main_window = wnd.MainWindow('MF.ui')
     filter_window = wnd.FilterWindow('filtr.ui')
     exit_window = wnd.Window('ex_aht.ui')
-    add_window = wnd.MainWindowButtons('add_button.ui')
+    add_window = wnd.MainWindow('add_button.ui')
 
     shadow_show_table = helpers.send_args_inside_func(main_window.show_table)
     main_window.form.Niraction.triggered.connect(main_window.sort_selected)
@@ -50,7 +50,7 @@ if __name__ == '__main__':
                                                                   exit_window))
     exit_window.form.cancelButton.clicked.connect(exit_window.window.close)
 
-    main_window.form.removeButton.clicked.connect(wnd.MainWindowButtons.delete_button(main_window))
+    main_window.form.removeButton.clicked.connect(main_window.delete_button(main_window))
 
     main_window.form.appendButton.clicked.connect(add_window.open_window(main_window, add_window, True))
     main_window.form.changeButton.clicked.connect(add_window.open_window(main_window, add_window, False))

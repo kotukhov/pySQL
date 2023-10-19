@@ -124,11 +124,17 @@
      <property name="enabled">
       <bool>true</bool>
      </property>
+     <property name="inputMethodHints">
+      <set>Qt::ImhNone</set>
+     </property>
      <property name="editable">
       <bool>false</bool>
      </property>
      <property name="currentText">
       <string/>
+     </property>
+     <property name="sizeAdjustPolicy">
+      <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
      </property>
      <item>
       <property name="text">
@@ -137,17 +143,17 @@
      </item>
      <item>
       <property name="text">
-       <string>П</string>
+       <string>Прикладное исследование</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Ф</string>
+       <string>Фундаментальное исследование</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Р</string>
+       <string>Экспериментальная разработка</string>
       </property>
      </item>
     </widget>
@@ -196,7 +202,17 @@
     </widget>
    </item>
    <item row="8" column="1" colspan="2">
-    <widget class="QLineEdit" name="post"/>
+    <widget class="QLineEdit" name="post">
+     <property name="contextMenuPolicy">
+      <enum>Qt::DefaultContextMenu</enum>
+     </property>
+     <property name="inputMethodHints">
+      <set>Qt::ImhNone</set>
+     </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item row="11" column="1">
     <widget class="QPushButton" name="agreeButton">
