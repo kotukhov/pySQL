@@ -14,6 +14,7 @@ TP_FV_COLUMN_WIDTH = (80, 130, 140, 150, 100)
 VUZ_COLUMN_WIDTH = (80, 130, 120, 130, 140, 100, 200, 140, 100, 700, 1000)
 
 widgetnames = ['Financial', 'Vuz', 'Grnti', 'Nir']
+DB_NAME = 'database.db'
 
 dict_cod_vuz_socr_naming = {
         1: 'АлтГТУ', 
