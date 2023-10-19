@@ -253,16 +253,15 @@ class MainWindowButtons(Window):
                     self.ui_window.form.cod_grnti.setText(cod_grnti)
                     self.ui_window.form.cod_grnti_2.setText(cod_grnti_2)
 
-                self.ui_window.form.cod_vuz.setEnabled(False)
-                self.ui_window.form.cod_vuz.setValue(int(data_stack[0]))
+                # self.ui_window.form.cod_vuz.setEnabled(False)
+                # self.ui_window.form.cod_vuz.setValue(int(data_stack[0]))
+                self.ui_window.form.socr_naming.setEnabled(False)
+                self.ui_window.form.socr_naming.setCurrentText(data_stack[3])
                 
                 self.ui_window.form.reg_number_nir.setDisabled(True)
                 self.ui_window.form.reg_number_nir.setText(data_stack[1])
 
                 self.ui_window.form.character_nir.setCurrentText(data_stack[2])
-
-                self.ui_window.form.socr_naming.setEnabled(False)
-                self.ui_window.form.socr_naming.setCurrentText(data_stack[3])
                 
                 self.ui_window.form.cod_grnti.setText(data_stack[4])
                 self.ui_window.form.ruk_nir.setText(data_stack[5])
@@ -283,7 +282,7 @@ class MainWindowButtons(Window):
     def add_button(self):
         """Функция добавления строки."""
 
-        cod_vuz = self.ui_window.form.cod_vuz.value()
+        # cod_vuz = self.ui_window.form.cod_vuz.value()
         reg_number_nir = self.ui_window.form.reg_number_nir.text()
         character_nir = self.ui_window.form.character_nir.currentText()
         socr_naming = self.ui_window.form.socr_naming.currentText()
@@ -304,12 +303,15 @@ class MainWindowButtons(Window):
             post != '' and 
             naming_nir != ''):
 
-            if cod_vuz <= 0:
-                message_text = 'Код ВУЗа не может быть меньше или равен нулю!'
-                self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
-                self.ui_window.form.message.show()
-                error = 1
-
+            # if cod_vuz <= 0:
+            #     message_text = 'Код ВУЗа не может быть меньше или равен нулю!'
+            #     self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
+            #     self.ui_window.form.message.show()
+            #     error = 1
+            dict_items = config.dict_cod_vuz_socr_naming.items()
+            for key, value in dict_items:
+                if value == socr_naming:
+                    cod_vuz = key
             data = get_data(db_name,
                             query=f"""SELECT codvuz, rnw FROM Tp_nir""") 
             set_cod_vuz_reg_number_nir = (cod_vuz, reg_number_nir)
@@ -373,7 +375,8 @@ class MainWindowButtons(Window):
     def edit_button(self, fin0, index):
         """Функция редактирования строки."""
 
-        cod_vuz = self.ui_window.form.cod_vuz.value()
+        # cod_vuz = self.ui_window.form.cod_vuz.value()
+        socr_naming = self.ui_window.form.socr_naming.currentText()
         reg_number_nir = self.ui_window.form.reg_number_nir.text()
         character_nir = self.ui_window.form.character_nir.currentText()
         cod_grnti = self.ui_window.form.cod_grnti.text()
@@ -406,7 +409,7 @@ class MainWindowButtons(Window):
                 self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
                 self.ui_window.form.message.show()
                 error = 1
-
+            
             if error == 0:
                 
                 if len(cod_grnti) == 6:
@@ -416,7 +419,10 @@ class MainWindowButtons(Window):
                     if len(cod_grnti_2) == 6:
                         cod_grnti_2 = cod_grnti_2[:6]
                     cod_grnti = cod_grnti + ',' + cod_grnti_2
-
+                dict_items = config.dict_cod_vuz_socr_naming.items()
+                for key, value in dict_items:
+                    if value == socr_naming:
+                        cod_vuz = key
                 query_tp_nir = f"""UPDATE Tp_nir 
                                 SET f1 = '{character_nir}', 
                                     f10 = '{cod_grnti}', 
