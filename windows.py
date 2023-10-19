@@ -34,7 +34,7 @@ class Window:
         cursor.execute(query)
         data = cursor.fetchall()
         conn.close()
-        if log:
+        if log and "Tp_nir" in query:
             self.last_query = query
         return data
 
@@ -81,7 +81,7 @@ class MainWindow(Window):
     def sort_selected(self):
         item = self.form.comboBoxSort.currentText()
         query = self.last_query
-        if not query:
+        if not query or "Tp_nir" not in query:
             query = "SELECT * \nFROM Tp_nir"
 
         if item == "Сортировка по потенциальному ключу":

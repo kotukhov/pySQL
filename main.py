@@ -12,8 +12,7 @@ if __name__ == '__main__':
     add_window = wnd.MainWindowButtons('add_button.ui')
 
     shadow_show_table = helpers.send_args_inside_func(main_window.show_table)
-    main_window.form.Niraction.triggered.connect(shadow_show_table(
-        'Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
+    main_window.form.Niraction.triggered.connect(main_window.sort_selected)
     main_window.form.Niraction.triggered.connect(main_window.form.horizontalFrame.show)
     main_window.form.Vuzaction.triggered.connect(shadow_show_table(
         'VUZ', 'Информация о ВУЗах', config.VUZ_HEADERS, config.VUZ_COLUMN_WIDTH))
