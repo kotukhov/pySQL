@@ -10,6 +10,9 @@ if __name__ == '__main__':
     filter_window = wnd.FilterWindow('filtr.ui')
     exit_window = wnd.Window('ex_aht.ui')
     add_window = wnd.MainWindow('add_button.ui')
+    main_window.form.Frame.hide()
+    main_window.form.analFrame.hide()
+    save_window = wnd.Window('save.ui')
 
     shadow_show_table = helpers.send_args_inside_func(main_window.show_table)
     main_window.form.Niraction.triggered.connect(main_window.sort_selected)
@@ -23,6 +26,11 @@ if __name__ == '__main__':
     main_window.form.Financialaction.triggered.connect(shadow_show_table(
         'Tp_fv', 'Информация о Финансировании', config.TP_FV_HEADERS, config.TP_FV_COLUMN_WIDTH))
     main_window.form.Financialaction.triggered.connect(main_window.form.horizontalFrame.hide)
+
+    main_window.form.Niraction.triggered.connect(lambda: main_window.showFrame('Data'))
+    main_window.form.Vuzaction.triggered.connect(lambda: main_window.showFrame('Data'))
+    main_window.form.Grntiaction.triggered.connect(lambda: main_window.showFrame('Data'))
+    main_window.form.Financialaction.triggered.connect(lambda: main_window.showFrame('Data'))
 
     filter_window.form.comboBoxFO.currentTextChanged.connect(filter_window.combobox_filter("oblname"))
     filter_window.form.comboBoxRegion.currentTextChanged.connect(filter_window.combobox_filter("city"))
@@ -54,4 +62,21 @@ if __name__ == '__main__':
 
     main_window.form.appendButton.clicked.connect(add_window.open_window(main_window, add_window, True))
     main_window.form.changeButton.clicked.connect(add_window.open_window(main_window, add_window, False))
+
+    main_window.form.rasp.triggered.connect(lambda: main_window.print_filter(filter_window.condition))
+    main_window.form.rasp.triggered.connect(lambda: main_window.showFrame('Analys'))
+    main_window.form.rasp.triggered.connect(lambda: main_window.show_table_NirbVUZ_copy('ViewWidget'))
+    main_window.form.rasp.triggered.connect(lambda: main_window.show_table_Nirbhar_copy('ViewWidget'))
+    main_window.form.rasp.triggered.connect(lambda: main_window.show_table_Nirbgrnti_copy('ViewWidget'))
+    main_window.form.saveNirbVUZ.clicked.connect(save_window.window.show)
+    main_window.form.saveNirbgrnti.clicked.connect(save_window.window.show)
+    main_window.form.saveNirbhar.clicked.connect(save_window.window.show)
+
+    tablenames = ['VUZ','har','grnti']
+    save_window.form.save.clicked.connect(lambda:main_window.save_to_docx(tablenames[0],save_window.form.saveEdit.text(),filter_window.condition))
+    save_window.form.save.clicked.connect(save_window.form.saveEdit.clear)
+    save_window.form.save.clicked.connect(save_window.window.close)
+    save_window.form.cancel.clicked.connect(save_window.window.close)
+
+
     app.exec()
