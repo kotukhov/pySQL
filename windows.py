@@ -366,12 +366,13 @@ class MainWindow(Window):
             message_text = 'Не выбрана запись для удаления'
             main_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка удаления', message_text)
             main_window.form.message.show()
-        
+
+    @helpers.send_args_inside_func
     def showFrame(self, qmenu):
         if qmenu == 'Data':
             self.form.analFrame.hide()
             self.form.Frame.show()
-        elif qmenu == 'Analys':
+        elif qmenu == 'Analyses':
             self.form.Frame.hide()
             self.form.analFrame.show()
 
@@ -410,7 +411,8 @@ class MainWindow(Window):
             getattr(self.form, f"Nirb{tablename}").setItem(row+1, 0, itogo_text)
             getattr(self.form, f"Nirb{tablename}").setItem(row+1, 1, itogo_num_t)
             getattr(self.form, f"Nirb{tablename}").setItem(row+1, 2, itogo_sumf_t)
-        
+
+    @helpers.send_args_inside_func
     def create_tables(self, namewidget):
         qtable = getattr(self.form, f"{namewidget}")
         data, items_z2, har, code, code_list, numworks_1tab, sumfin_1tab, harac =[], [], [], [], [], [], [], []
@@ -486,6 +488,7 @@ class MainWindow(Window):
         self.constructor_table('grnti', config.COLUMN_WIDTHS_Nirbgrnti, config.HEADERS_Nirbgrnti, table3, False)
 
 
+    @helpers.send_args_inside_func
     def save_to_docx(self, qtable1, filename, cond = None):
         qtable = getattr(self.form, f"Nirb{qtable1}")
         doc = docx.Document()
@@ -513,6 +516,7 @@ class MainWindow(Window):
         doc.add_paragraph('Общая сумма финансирования: ' + str(self.get_data('database.db', f"""SELECT SUM(f18) FROM Tp_nir""", log = False)[0][0]))
         doc.save(f"{filename}.docx")
 
+    @helpers.send_args_inside_func
     def print_filter(self, cond):
         fil_name = ['Федеральный округ: ','Субъект федерации: ','Город: ','ВУЗ: ','Первые цифры кода ГРНТИ: ']
         self.form.ApplFilter.clear()
