@@ -65,9 +65,8 @@ if __name__ == '__main__':
 
     main_window.form.rasp.triggered.connect(lambda: main_window.print_filter(filter_window.condition))
     main_window.form.rasp.triggered.connect(lambda: main_window.showFrame('Analys'))
-    main_window.form.rasp.triggered.connect(lambda: main_window.show_table_NirbVUZ_copy('ViewWidget'))
-    main_window.form.rasp.triggered.connect(lambda: main_window.show_table_Nirbhar_copy('ViewWidget'))
-    main_window.form.rasp.triggered.connect(lambda: main_window.show_table_Nirbgrnti_copy('ViewWidget'))
+    main_window.form.rasp.triggered.connect(lambda: main_window.create_tables('ViewWidget'))
+
     main_window.form.saveNirbVUZ.clicked.connect(save_window.window.show)
     main_window.form.saveNirbgrnti.clicked.connect(save_window.window.show)
     main_window.form.saveNirbhar.clicked.connect(save_window.window.show)
