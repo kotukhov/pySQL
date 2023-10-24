@@ -9,6 +9,7 @@ import helpers
 import docx
 import re
 
+
 class Window:
     def __init__(self, ui) -> None:
         # get all table names in self.tables
@@ -44,7 +45,6 @@ class Window:
     def close(*windows):
         for w in windows:
             w.window.close()
-
 
 
 class MainWindow(Window):

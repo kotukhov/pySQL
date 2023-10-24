@@ -45,10 +45,7 @@ if __name__ == '__main__':
     main_window.window.showMaximized()
 
     main_window.form.resetFiltersButton.setEnabled(False)
-    main_window.form.resetFiltersButton.clicked.connect(shadow_show_table(
-        'Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH))
-
-    main_window.form.resetFiltersButton.clicked.connect(main_window.reset_filters)
+    main_window.form.resetFiltersButton.clicked.connect(main_window.reset_filters(filter_window))
 
     main_window.form.Exaction.triggered.connect(exit_window.window.show)
 
