@@ -9,6 +9,7 @@ import helpers
 import docx
 import re
 
+
 class Window:
     def __init__(self, ui) -> None:
         # get all table names in self.tables
@@ -44,7 +45,6 @@ class Window:
     def close(*windows):
         for w in windows:
             w.window.close()
-
 
 
 class MainWindow(Window):
@@ -392,146 +392,67 @@ class MainWindow(Window):
             message_text = 'Не выбрана запись для удаления'
             main_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка удаления', message_text)
             main_window.form.message.show()
-        
+
+    @helpers.send_args_inside_func
     def showFrame(self, qmenu):
         if qmenu == 'Data':
             self.form.analFrame.hide()
             self.form.Frame.show()
-        elif qmenu == 'Analys':
+        elif qmenu == 'Analyses':
             self.form.Frame.hide()
             self.form.analFrame.show()
 
-        
-    def show_table_NirbVUZ_copy(self, table = None):
-        self.form.NirbVUZ.clear()
-        qtable = getattr(self.form, f"{table}")
-        data = []
-        if table:
-            for row in range(qtable.rowCount()):
-                dat = []
-                for col in range(qtable.columnCount()):
-                    item = qtable.item(row, col)
-                    dat.append(item.text())
-                data.append(dat)
-        self.form.NirbVUZ.show()
-        items_z2=[]
+    def constructor_table(self, tablename, column_widths, column_headers, data, itogo = bool):
+        ###{tablenme = 'VUZ'/'har'/'grnti'
+        # data = [column1, column2, ..., columnN] of 1-3 tables
+        # itogo = True if need to add itogo to table}###
+        getattr(self.form, f"Nirb{tablename}").clear()
+        getattr(self.form, f"Nirb{tablename}").show()
+        if itogo:
+            getattr(self.form, f"Nirb{tablename}").setRowCount(len(data[0])+1)
+        else:
+            getattr(self.form, f"Nirb{tablename}").setRowCount(len(data[0]))
+        getattr(self.form, f"Nirb{tablename}").setColumnCount(len(column_headers))
+        itogo_num, itogo_sumf = 0, 0
+        for column in range(len(data)):
+            for row in range(len(data[column])):
+                item = QTableWidgetItem(str(data[column][row]))
+                item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                getattr(self.form, f"Nirb{tablename}").setItem(row, column, item)
+                if column == 1 and itogo:
+                    itogo_num += data[column][row]
+                elif column == 2 and itogo:
+                    itogo_sumf += data[column][row]
+            getattr(self.form, f"Nirb{tablename}").setColumnWidth(column, column_widths[column])
+            if itogo:
+                itogo_text = QTableWidgetItem('Итого:')
+                itogo_text.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                itogo_num_t = QTableWidgetItem(str(itogo_num))
+                itogo_num_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                itogo_sumf_t = QTableWidgetItem(str(itogo_sumf))
+                itogo_sumf_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+        getattr(self.form, f"Nirb{tablename}").setHorizontalHeaderLabels(column_headers)
+        getattr(self.form, f"Nirb{tablename}").sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
+        if itogo:
+            getattr(self.form, f"Nirb{tablename}").setItem(row+1, 0, itogo_text)
+            getattr(self.form, f"Nirb{tablename}").setItem(row+1, 1, itogo_num_t)
+            getattr(self.form, f"Nirb{tablename}").setItem(row+1, 2, itogo_sumf_t)
+
+    @helpers.send_args_inside_func
+    def create_tables(self, namewidget):
+        qtable = getattr(self.form, f"{namewidget}")
+        data, items_z2, har, code, code_list, numworks_1tab, sumfin_1tab, harac =[], [], [], [], [], [], [], []
+        numworks_2tab, sumfin_2tab, numworks_3tab, sumfin_3tab, namegrnti = [], [], [], [], []
+        for row in range(qtable.rowCount()):
+            dat = []
+            for col in range(qtable.columnCount()):
+                item = qtable.item(row, col)
+                dat.append(item.text())
+            data.append(dat)
         for k in range(len(data)):
             items_z2.append(data[k][3])
-        items_z2 = list(set(items_z2))
-        self.form.NirbVUZ.setRowCount(len(items_z2)+1)
-        self.form.NirbVUZ.setColumnCount(3)
-        itogo_num = 0
-        itogo_sumf = 0
-        
-        for i in range(len(items_z2)):
-            item_z2 = QTableWidgetItem(str(items_z2[i]))
-            item_z2.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-            self.form.NirbVUZ.setItem(i, 0, item_z2)
-            numworks = 0
-            sumfin = 0
-            for j in range(len(data)):
-                if data[j][3] == items_z2[i]:
-                    numworks += 1
-                    sumfin += int(data[j][7])
-            numw = QTableWidgetItem(str(numworks))
-            itogo_num += numworks
-            numw.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-            self.form.NirbVUZ.setItem(i,1, numw)
-            sumf = QTableWidgetItem(str(sumfin))
-            itogo_sumf += sumfin
-            sumf.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-            self.form.NirbVUZ.setItem(i, 2, sumf)
-        self.form.NirbVUZ.setColumnWidth(0, 110)
-        self.form.NirbVUZ.setColumnWidth(1, 80)
-        self.form.NirbVUZ.setColumnWidth(2, 120)
-        self.form.NirbVUZ.setHorizontalHeaderLabels(['Сокр. наим. ВУЗа','Кол-во НИР','Плановое Финанс.'])
-        itogo_num_t = QTableWidgetItem(str(itogo_num))
-        itogo_sumf_t = QTableWidgetItem(str(itogo_sumf))
-        itogo = QTableWidgetItem('Итого:')
-        itogo.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-        itogo_num_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-        itogo_sumf_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-        self.form.NirbVUZ.sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
-        self.form.NirbVUZ.setItem(i+1, 0, itogo)
-        self.form.NirbVUZ.setItem(i+1, 1, itogo_num_t)
-        self.form.NirbVUZ.setItem(i+1, 2, itogo_sumf_t)
-
-    def show_table_Nirbhar_copy(self, table):
-        self.form.Nirbhar.clear()
-        qtable = getattr(self.form, f"{table}")
-        data = []
-        if table:
-            for row in range(qtable.rowCount()):
-                dat = []
-                for col in range(qtable.columnCount()):
-                    item = qtable.item(row, col)
-                    dat.append(item.text())
-                data.append(dat)
-        self.form.Nirbhar.show()
-        har = []
-        for k in range(len(data)):
             har.append(data[k][2])
-        har = list(set(har))
-        self.form.Nirbhar.setRowCount(len(har) + 1)
-        self.form.Nirbhar.setColumnCount(3)
-        itogo_num = 0
-        itogo_sumf = 0
-        for i in range(len(har)):
-            if har[i] == 'Ф':
-                harac = QTableWidgetItem(str(har[i])+'ундаментальное исследование')
-            elif har[i] == 'П':
-                harac = QTableWidgetItem(str(har[i]) + 'рикладное исследование')
-            else:
-                harac = QTableWidgetItem('Экспериментальная разработка')
-            harac.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-            self.form.Nirbhar.setItem(i, 0, harac)
-            numworks = 0
-            sumfin = 0
-            for j in range(len(data)):
-                if data[j][2] == har[i]:
-                    numworks += 1
-                    sumfin += int(data[j][7])
-            numw = QTableWidgetItem(str(numworks))
-            itogo_num += numworks
-            numw.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-            self.form.Nirbhar.setItem(i, 1, numw)
-            sumf = QTableWidgetItem(str(sumfin))
-            itogo_sumf += sumfin
-            sumf.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-            self.form.Nirbhar.setItem(i, 2, sumf)
-        self.form.Nirbhar.setColumnWidth(0, 190)
-        self.form.Nirbhar.setColumnWidth(1, 80)
-        self.form.Nirbhar.setColumnWidth(2, 120)
-        self.form.Nirbhar.setHorizontalHeaderLabels(['Характер', 'Кол-во НИР', 'Плановое Финанс.'])
-        itogo_num_t = QTableWidgetItem(str(itogo_num))
-        itogo_sumf_t = QTableWidgetItem(str(itogo_sumf))
-        itogo = QTableWidgetItem('Итого:')
-        itogo.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-        itogo_num_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-        itogo_sumf_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-        self.form.Nirbhar.sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
-        self.form.Nirbhar.setItem(i+1, 0, itogo)
-        self.form.Nirbhar.setItem(i+1, 1, itogo_num_t)
-        self.form.Nirbhar.setItem(i+1, 2, itogo_sumf_t)
-
-    def show_table_Nirbgrnti_copy(self, table):
-        self.form.Nirbgrnti.clear()
-        qtable = getattr(self.form, f"{table}")
-        data = []
-        if table:
-            for row in range(qtable.rowCount()):
-                dat = []
-                for col in range(qtable.columnCount()):
-                    item = qtable.item(row, col)
-                    dat.append(item.text())
-                data.append(dat)
-        self.form.Nirbgrnti.show()
-        code = []
-        code_list = []
-        table_db = 'Tp_nir'
-        for k in range(len(data)):
             code.append(data[k][4])
-        #code = list(set(code))
         for i in range(len(code)):
             if len(code[i]) <= 10:
                 code1 = code[i][0:2]
@@ -541,45 +462,59 @@ class MainWindow(Window):
                 code_list.append(code2)
             code_list.append(code1)
         code_list = list(set(code_list))
-        self.form.Nirbgrnti.setRowCount(len(code_list))
-        self.form.Nirbgrnti.setColumnCount(4)
+        items_z2 = list(set(items_z2))
+        har = list(set(har))
+        for i in range(len(items_z2)):
+            numworks_1 = 0
+            sumfin_1 = 0
+            for j in range(len(data)):
+                if data[j][3] == items_z2[i]:
+                    numworks_1 += 1
+                    sumfin_1 += int(data[j][7])
+            numworks_1tab.append(numworks_1)
+            sumfin_1tab.append(sumfin_1)
+        table1=[items_z2, numworks_1tab, sumfin_1tab]
+        for i in range(len(har)):
+            if har[i] == 'Ф':
+                harac.append('Фундаментальное исследование')
+            elif har[i] == 'П':
+                harac.append('Прикладное исследование')
+            else:
+                harac.append('Экспериментальная разработка')
+            numworks_2 = 0
+            sumfin_2 = 0
+            for j in range(len(data)):
+                if data[j][2] == har[i]:
+                    numworks_2 += 1
+                    sumfin_2 += int(data[j][7])
+            numworks_2tab.append(numworks_2)
+            sumfin_2tab.append(sumfin_2)
+        table2 = [harac, numworks_2tab, sumfin_2tab]
         for j in range(len(code_list)):
-            cr = QTableWidgetItem(str(code_list[j]))
-            cr.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-            self.form.Nirbgrnti.setItem(j, 0, cr)
-            numworks = 0
-            sumfin = 0
+            numworks_3 = 0
+            sumfin_3= 0
             for i in range(len(data)):
                 s = data[i][4]
                 match = re.match(r"(\d{2}).*", s)
                 if (code_list[j] == match.group(1)):
-                    numworks += 1
-                    sumfin += int(data[i][7])
+                    numworks_3 += 1
+                    sumfin_3 += int(data[i][7])
                 if (len(data[i][4]) >= 12):
                     match2 = re.match(r".{9}(\d{2})", s)
                     if (code_list[j] == match2.group(1)) and (code_list[j] != match.group(1)):
-                        numworks += 1
-                        sumfin += int(data[i][7])
-            namegrnti = self.get_data('database.db',
-                                 query=f"""SELECT rubrika FROM grntirub WHERE codrub == '{code_list[j]}'""")
-            ngr = QTableWidgetItem(str(namegrnti[0][0]))
-            ngr.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-            self.form.Nirbgrnti.setItem(j, 1, ngr)
-            numw = QTableWidgetItem(str(numworks))
-            numw.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-            self.form.Nirbgrnti.setItem(j, 2, numw)
-            sumf = QTableWidgetItem(str(sumfin))
-            sumf.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-            self.form.Nirbgrnti.setItem(j, 3, sumf)
-        self.form.Nirbgrnti.setColumnWidth(0, 70)
-        self.form.Nirbgrnti.setColumnWidth(1, 80)
-        self.form.Nirbgrnti.setColumnWidth(2, 80)
-        self.form.Nirbgrnti.setColumnWidth(3, 120)
-        self.form.Nirbgrnti.setHorizontalHeaderLabels(['Код ГРНТИ','Рубрика','Кол-во НИР','Плановое Финанс.'])
-        self.form.Nirbgrnti.sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
+                        numworks_3 += 1
+                        sumfin_3 += int(data[i][7])
+            numworks_3tab.append(numworks_3)
+            sumfin_3tab.append(sumfin_3)
+            namegrnti.append(self.get_data('database.db',
+                                 query=f"""SELECT rubrika FROM grntirub WHERE codrub == '{code_list[j]}'""")[0][0])
+        table3 = [code_list, namegrnti, numworks_3tab, sumfin_3tab]
+        self.constructor_table('VUZ', config.COLUMN_WIDTHS_NirbVUZ, config.HEADERS_NirbVUZ, table1, True)
+        self.constructor_table('har', config.COLUMN_WIDTHS_Nirbhar, config.HEADERS_Nirbhar, table2, True)
+        self.constructor_table('grnti', config.COLUMN_WIDTHS_Nirbgrnti, config.HEADERS_Nirbgrnti, table3, False)
 
 
-
+    @helpers.send_args_inside_func
     def save_to_docx(self, qtable1, filename, cond = None):
         qtable = getattr(self.form, f"Nirb{qtable1}")
         doc = docx.Document()
@@ -607,6 +542,7 @@ class MainWindow(Window):
         doc.add_paragraph('Общая сумма финансирования: ' + str(self.get_data('database.db', f"""SELECT SUM(f18) FROM Tp_nir""", log = False)[0][0]))
         doc.save(f"{filename}.docx")
 
+    @helpers.send_args_inside_func
     def print_filter(self, cond):
         fil_name = ['Федеральный округ: ','Субъект федерации: ','Город: ','ВУЗ: ','Первые цифры кода ГРНТИ: ']
         self.form.ApplFilter.clear()
@@ -617,7 +553,6 @@ class MainWindow(Window):
         count = self.get_data('database.db', query=f"""SELECT COUNT(f18) FROM Tp_nir""", log = False)
         self.form.nirsum.setText('Общее число НИР: ' + str(count[0][0]))
         self.form.finsum.setText('Общая сумма финансирования: ' + str(summ[0][0]))
-
 
 
 class FilterWindow(Window):

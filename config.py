@@ -13,6 +13,14 @@ TP_NIR_COLUMN_WIDTH = (80, 120, 120, 130, 140, 150, 180, 140, 100)
 TP_FV_COLUMN_WIDTH = (80, 130, 140, 150, 100)
 VUZ_COLUMN_WIDTH = (80, 130, 120, 130, 140, 100, 200, 140, 100, 700, 1000)
 
+COLUMN_WIDTHS_NirbVUZ = (120,90,130)
+COLUMN_WIDTHS_Nirbhar = (200,90,130)
+COLUMN_WIDTHS_Nirbgrnti = (70,250,90,130)
+
+HEADERS_NirbVUZ = ('Сокр. наим. ВУЗа','Кол-во НИР','Плановое Финанс.')
+HEADERS_Nirbhar = ('Характер', 'Кол-во НИР', 'Плановое Финанс.')
+HEADERS_Nirbgrnti = ('Код ГРНТИ','Рубрика','Кол-во НИР','Плановое Финанс.')
+
 widgetnames = ['Financial', 'Vuz', 'Grnti', 'Nir']
 DB_NAME = 'database.db'
 
