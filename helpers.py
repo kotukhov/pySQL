@@ -9,9 +9,15 @@ def send_args_inside_func(func):
     return wrapper
 
 
-def get_headers(table):
+def get_headers(table, query=None):
     conn = sqlite3.connect(config.DB_NAME)
     cursor = conn.cursor()
+    if query is not None:
+        cursor.execute(query)
+        data = cursor.fetchall()
+        conn.close()
+        return data
+    
     cursor.execute(f"SELECT * FROM {table}")
     cursor.fetchall()
     data = [descr[0] for descr in cursor.description]

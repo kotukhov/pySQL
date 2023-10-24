@@ -556,6 +556,1301 @@
        <string>МАДИ</string>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>БорисГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>БрянГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВладГГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ГосИРЯП</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КазГЭУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ГПолАк</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГУСЭ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ОрГИМ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РАрмСлУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПовГУС</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УфГАЭиС</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ГжГХПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПенГТхнА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПятГГТхУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СнКГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЮгорГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПсковГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВШНИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КрГТЭИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НижКИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ОрлГИЭТ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РСТЭУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГТЭУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РГСУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЯкГИТИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СахаГПА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПсковГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГИЭМ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НИУ МИЭТ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГЛингУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГОУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Станкин</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГСУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НИУ МИФИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГУГИК</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГАКХиС</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГУПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГИРЭА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НИУ МИСиС</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГУТХТ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГУИЭ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГГЭИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГУЛ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МПедГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МФТИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГХПА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МЭСИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НИУ МЭИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НижГАСУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НижГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НижГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НовгГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НовсГАХА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НовсГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НовсНИГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НовсГАСУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СибГГА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НовсГУЭУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЮРГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НорИИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ОбнГТУАЭ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ОмскГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ОмскГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ОренГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПензГУАС</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПензГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПермНИПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПермГНИУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПетрГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РЭУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РосГидро</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РГГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РосЗИТЛП</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РУДН</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РХТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РостГСУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РостААИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЮжнФУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РостГАСМ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РосГЭУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РыбГАТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РязГРТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГУАКП</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГИЭУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГЛТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Горный</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГМТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГПолУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГУТД</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЛЭТИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГАСУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбИМаш</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбНИУИТМО</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГТехИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГУНТПТ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГТУРП</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГУЭиФ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СПбГХПА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СамГАСУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СамГАУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СамГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СамГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СамГЭУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СаратГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СаратГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СаратСЭУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СаратГЮА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СКГМИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СОГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СЗГЗТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СибАКУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СибГАДА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СибГИндУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СибГТхнУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СКФУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СыктГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТагГРТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТамбГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТамбГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТверГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТверГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТолГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НИТомГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТомГАСУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТомГУСУР</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НИТомПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТулГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТюмГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТюмГНУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТюмГАСУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УдмГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УлГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УрГЮА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УрГАРХА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УрГГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УрГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УрГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УрГЭУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УрГЛУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УфГАТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УфГНТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УхГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТихокГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ХабГАЭП</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЮУГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЧелГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЧечГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЗабайкГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЧувГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СВФедУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЯрГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЯрГТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СочГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ГУ-УНПК</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЧерГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РГУИТП</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ГАлтГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КыргРСУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ГАкСК</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПущГЕНИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТамбГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ГЕА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РГУТС</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВладГУЭС</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ИнгГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ХакГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УлГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МайГТхнУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВЗФЭИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВорГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>АдГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>БурГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЮРУЭиС</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЛитИн</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ОмскГИС</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ГАУГН</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВятГГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ГлазГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ГрозГНТУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЕлабГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЕлецГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВСГАО</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ОмскГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ИркГЛУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ИшимГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТатГГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КалужГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КамчГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КЧГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КарелГПА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КомиГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>АГПГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КострГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КрГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КурскГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЛипГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МагнГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МарГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СВГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МичГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МордГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГГумУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МурмГГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НЧИСПТиР</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НижГЛУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НижГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НТагГСПА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>КузГПА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>НовсГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ОренГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ОрлГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПензГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПермГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПоморГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПсковГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПятГЛУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РосГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РостГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РязГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПовГСГА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СмолГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СолГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СтавГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СтерГПА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТагГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТомГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ДагГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТобГСПА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТулГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ТувГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УлГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УрГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>РосГППУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>УсГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ДВГГумУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЧелГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЧеченГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЗабГГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЧувГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>МГЮрА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ШадГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ШуйГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>СахГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ЯрГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>АрзГПИ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВолгГСПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>АрмГПА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВолжГИПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>АстрГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ВологГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>АлтГПА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>БашГПУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>БелГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>АлтГАО</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ПриамГУ</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>БирскГСПА</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>БлагГПУ</string>
+      </property>
+     </item>
     </widget>
    </item>
    <item row="1" column="0">

@@ -234,12 +234,24 @@ class MainWindow(Window):
                     VALUES ({cod_vuz},'{reg_number_nir}','{config.dict_character_nir[character_nir]}','{socr_naming}','{cod_grnti}', '{ruk_nir}', '{post}',{financial},'{naming_nir}');"""
                 index = helpers.query_change_db(query_tp_nir)
 
-                query_tp_fv = f"""
-                            UPDATE Tp_fv
-                            SET z3 = z3 + {financial}, numworks = numworks + 1
-                            WHERE codvuz = '{cod_vuz}';
-                            """
-                helpers.query_change_db(query_tp_fv)
+                query_tp_fv_set_codvuz = "SELECT codvuz FROM Tp_fv;"
+                set_codvuz = helpers.get_headers(table='Tp_fv',
+                                                 query=query_tp_fv_set_codvuz)
+                set_codvuz = [i[0] for i in set_codvuz]
+
+                if cod_vuz not in set_codvuz:
+                    query_tp_fv = f"""
+                                INSERT INTO Tp_fv (codvuz, z2, z3, z18, numworks)
+                                VALUES ({cod_vuz},'{socr_naming}', {financial}, 'None', {1});
+                                """
+                    helpers.query_change_db(query_tp_fv)
+                else:
+                    query_tp_fv = f"""
+                                UPDATE Tp_fv
+                                SET z3 = z3 + {financial}, numworks = numworks + 1
+                                WHERE codvuz = '{cod_vuz}';
+                                """
+                    helpers.query_change_db(query_tp_fv)
                 main_window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
                 
                 self.new_window.close()
@@ -349,12 +361,26 @@ class MainWindow(Window):
                     query_tp_nir = f"DELETE FROM Tp_nir WHERE codvuz = '{stack[i][0]}' AND rnw = '{stack[i][1]}';"
                     helpers.query_change_db(query=query_tp_nir)
 
-                    query_tp_fv = f"""
-                                    UPDATE Tp_fv
-                                    SET z3 = z3 - {stack[i][7]}, numworks = numworks - 1
-                                    WHERE codvuz = '{stack[i][0]}';
-                                    """
-                    helpers.query_change_db(query=query_tp_fv)
+                    query_tp_fv_get_numworks = f"SELECT numworks FROM Tp_fv WHERE codvuz = '{stack[i][0]}';"
+                    numworks = helpers.get_headers('Tp_fv', query_tp_fv_get_numworks)
+                    numworks = [i[0] for i in numworks]
+
+                    if numworks[0] == 1:
+                        query_tp_fv = f"""
+                                        DELETE FROM Tp_fv
+                                        WHERE codvuz = '{stack[i][0]}';
+                                        """
+                        helpers.query_change_db(query=query_tp_fv)
+
+                    else:
+                        query_tp_fv = f"""
+                                        UPDATE Tp_fv
+                                        SET z3 = z3 - {stack[i][7]}, numworks = numworks - 1
+                                        WHERE codvuz = '{stack[i][0]}';
+                                        """
+                        helpers.query_change_db(query=query_tp_fv)
+
+
                     main_window.form.ViewWidget.model().removeRow(index)
                     main_window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
 
@@ -396,6 +422,7 @@ class MainWindow(Window):
         self.form.NirbVUZ.setColumnCount(3)
         itogo_num = 0
         itogo_sumf = 0
+        
         for i in range(len(items_z2)):
             item_z2 = QTableWidgetItem(str(items_z2[i]))
             item_z2.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
