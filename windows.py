@@ -514,7 +514,6 @@ class MainWindow(Window):
         self.constructor_table('grnti', config.COLUMN_WIDTHS_Nirbgrnti, config.HEADERS_Nirbgrnti, table3, False)
 
 
-    # @helpers.send_args_inside_func
     def save_to_docx(self, qtable1, cond = None):
         filename = QFileDialog.getSaveFileName(None,'Save File', '.', 'Документ Microsoft Word (*.docx)' )[0]
         if filename == '':
@@ -545,13 +544,14 @@ class MainWindow(Window):
         doc.add_paragraph('Общая сумма финансирования: ' + str(self.get_data('database.db', f"""SELECT SUM(f18) FROM Tp_nir""", log = False)[0][0]))
         doc.save(f"{filename}")
 
-    # @helpers.send_args_inside_func
+
     def print_filter(self, cond):
         fil_name = ['Федеральный округ: ','Субъект федерации: ','Город: ','ВУЗ: ','Первые цифры кода ГРНТИ: ']
         self.form.ApplFilter.clear()
-        for fp in range(len(cond)):
-            if cond[fp]:
-                self.form.ApplFilter.append(fil_name[fp] + cond[fp])
+        if cond:
+            for fp in range(len(cond)):
+                if cond[fp]:
+                    self.form.ApplFilter.append(fil_name[fp] + cond[fp])
         summ = self.get_data('database.db', query=f"""SELECT SUM(f18) FROM Tp_nir""", log = False)
         count = self.get_data('database.db', query=f"""SELECT COUNT(f18) FROM Tp_nir""", log = False)
         self.form.nirsum.setText('Общее число НИР: ' + str(count[0][0]))

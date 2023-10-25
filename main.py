@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     main_window.form.resetFiltersButton.setEnabled(False)
     main_window.form.resetFiltersButton.clicked.connect(main_window.reset_filters(filter_window))
-
+    main_window.form.resetFiltersButton.clicked.connect(lambda: filter_window.condition.clear())
     main_window.form.Exaction.triggered.connect(exit_window.window.show)
 
     exit_window.form.agreeButton.clicked.connect(wnd.Window.close(main_window,
@@ -60,7 +60,6 @@ if __name__ == '__main__':
     main_window.form.appendButton.clicked.connect(add_window.open_window(main_window, add_window, True))
     main_window.form.changeButton.clicked.connect(add_window.open_window(main_window, add_window, False))
 
-    # main_window.form.rasp.triggered.connect(main_window.print_filter(lambda: filter_window.condition))
     main_window.form.rasp.triggered.connect(lambda: main_window.print_filter(filter_window.condition))
     main_window.form.rasp.triggered.connect(main_window.showFrame('Analyses'))
     main_window.form.rasp.triggered.connect(main_window.create_tables('ViewWidget'))
