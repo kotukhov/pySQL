@@ -12,7 +12,7 @@ if __name__ == '__main__':
     add_window = wnd.MainWindow('add_button.ui')
     main_window.form.Frame.hide()
     main_window.form.analFrame.hide()
-    save_window = wnd.Window('save.ui')
+
 
     shadow_show_table = helpers.send_args_inside_func(main_window.show_table)
     main_window.form.Niraction.triggered.connect(main_window.sort_selected)
@@ -64,15 +64,10 @@ if __name__ == '__main__':
     main_window.form.rasp.triggered.connect(main_window.showFrame('Analyses'))
     main_window.form.rasp.triggered.connect(main_window.create_tables('ViewWidget'))
 
-    main_window.form.saveNirbVUZ.clicked.connect(save_window.window.show)
-    main_window.form.saveNirbgrnti.clicked.connect(save_window.window.show)
-    main_window.form.saveNirbhar.clicked.connect(save_window.window.show)
-
-    tablenames = ['VUZ','har','grnti']
-    save_window.form.save.clicked.connect(main_window.save_to_docx(tablenames[0],
-                                                                   save_window.form.saveEdit.text(),
+    main_window.form.saveNirbVUZ.clicked.connect(main_window.save_to_docx('VUZ',
                                                                    filter_window.condition))
-    save_window.form.save.clicked.connect(save_window.form.saveEdit.clear)
-    save_window.form.save.clicked.connect(save_window.window.close)
-    save_window.form.cancel.clicked.connect(save_window.window.close)
+    main_window.form.saveNirbgrnti.clicked.connect(main_window.save_to_docx('grnti',
+                                                                   filter_window.condition))
+    main_window.form.saveNirbhar.clicked.connect(main_window.save_to_docx('har',
+                                                                   filter_window.condition))
     app.exec()

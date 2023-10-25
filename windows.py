@@ -2,7 +2,7 @@ import sqlite3
 import sys
 from PyQt6 import uic, QtCore
 from PyQt6.QtSql import QSqlDatabase
-from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidgetItem
+from PyQt6.QtWidgets import QMessageBox, QDialog, QTableWidgetItem, QFileDialog
 
 import config
 import helpers
@@ -515,7 +515,10 @@ class MainWindow(Window):
 
 
     @helpers.send_args_inside_func
-    def save_to_docx(self, qtable1, filename, cond = None):
+    def save_to_docx(self, qtable1, cond = None):
+        filename = QFileDialog.getSaveFileName(None,'Save File', '.', 'Документ Microsoft Word (*.docx)' )[0]
+        if filename == '':
+            return
         qtable = getattr(self.form, f"Nirb{qtable1}")
         doc = docx.Document()
         fil_name = ['Федеральный округ: ','Субъект федерации: ','Город: ','ВУЗ: ','Первые цифры кода ГРНТИ: ']
@@ -540,7 +543,7 @@ class MainWindow(Window):
                 table.cell(row + 1, col).text = item.text() if item else ""
         doc.add_paragraph('Общее число НИР: ' + str(self.get_data('database.db', f"""SELECT COUNT(f18) FROM Tp_nir""", log = False)[0][0]))
         doc.add_paragraph('Общая сумма финансирования: ' + str(self.get_data('database.db', f"""SELECT SUM(f18) FROM Tp_nir""", log = False)[0][0]))
-        doc.save(f"{filename}.docx")
+        doc.save(f"{filename}")
 
     @helpers.send_args_inside_func
     def print_filter(self, cond):
