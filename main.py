@@ -60,14 +60,15 @@ if __name__ == '__main__':
     main_window.form.appendButton.clicked.connect(add_window.open_window(main_window, add_window, True))
     main_window.form.changeButton.clicked.connect(add_window.open_window(main_window, add_window, False))
 
-    main_window.form.rasp.triggered.connect(main_window.print_filter(filter_window.condition))
+    # main_window.form.rasp.triggered.connect(main_window.print_filter(lambda: filter_window.condition))
+    main_window.form.rasp.triggered.connect(lambda: main_window.print_filter(filter_window.condition))
     main_window.form.rasp.triggered.connect(main_window.showFrame('Analyses'))
     main_window.form.rasp.triggered.connect(main_window.create_tables('ViewWidget'))
 
-    main_window.form.saveNirbVUZ.clicked.connect(main_window.save_to_docx('VUZ',
+    main_window.form.saveNirbVUZ.clicked.connect(lambda: main_window.save_to_docx('VUZ',
                                                                    filter_window.condition))
-    main_window.form.saveNirbgrnti.clicked.connect(main_window.save_to_docx('grnti',
+    main_window.form.saveNirbgrnti.clicked.connect(lambda: main_window.save_to_docx('grnti',
                                                                    filter_window.condition))
-    main_window.form.saveNirbhar.clicked.connect(main_window.save_to_docx('har',
+    main_window.form.saveNirbhar.clicked.connect(lambda: main_window.save_to_docx('har',
                                                                    filter_window.condition))
     app.exec()

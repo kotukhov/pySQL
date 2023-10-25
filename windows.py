@@ -514,7 +514,7 @@ class MainWindow(Window):
         self.constructor_table('grnti', config.COLUMN_WIDTHS_Nirbgrnti, config.HEADERS_Nirbgrnti, table3, False)
 
 
-    @helpers.send_args_inside_func
+    # @helpers.send_args_inside_func
     def save_to_docx(self, qtable1, cond = None):
         filename = QFileDialog.getSaveFileName(None,'Save File', '.', 'Документ Microsoft Word (*.docx)' )[0]
         if filename == '':
@@ -545,7 +545,7 @@ class MainWindow(Window):
         doc.add_paragraph('Общая сумма финансирования: ' + str(self.get_data('database.db', f"""SELECT SUM(f18) FROM Tp_nir""", log = False)[0][0]))
         doc.save(f"{filename}")
 
-    @helpers.send_args_inside_func
+    # @helpers.send_args_inside_func
     def print_filter(self, cond):
         fil_name = ['Федеральный округ: ','Субъект федерации: ','Город: ','ВУЗ: ','Первые цифры кода ГРНТИ: ']
         self.form.ApplFilter.clear()
