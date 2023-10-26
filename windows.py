@@ -109,6 +109,7 @@ class MainWindow(Window):
         self.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
         self.form.comboBoxSort.setCurrentIndex(0)
         self.form.resetFiltersButton.setEnabled(False)
+        window.condition = [None for _ in window.condition]
         window.reset_form()
 
     @helpers.send_args_inside_func
@@ -117,7 +118,7 @@ class MainWindow(Window):
         self.ui_window = add_window
         self.ui_window.form.setupUi(self.new_window)
         self.new_window.show()
-        if flag == True:
+        if flag:
             self.ui_window.form.agreeButton.clicked.connect(self.add_button(main_window))
         else:
             selected_row = main_window.form.ViewWidget.selectionModel().selectedRows()
@@ -126,7 +127,7 @@ class MainWindow(Window):
             if 0 < len(selected_index) < 2:
 
                 data_stack = helpers.get_rows_from_table(selected_index[0], main_window.form.ViewWidget.model())
-                if len(data_stack[4])>8:
+                if len(data_stack[4]) > 8:
                     cod_grnti = data_stack[4][:9]
                     cod_grnti_2 = data_stack[4][8:]
                     self.ui_window.form.cod_grnti.setText(cod_grnti)
@@ -134,7 +135,7 @@ class MainWindow(Window):
 
                 self.ui_window.form.socr_naming.setEnabled(False)
                 self.ui_window.form.socr_naming.setCurrentText(data_stack[3])
-                
+
                 self.ui_window.form.reg_number_nir.setDisabled(True)
                 self.ui_window.form.reg_number_nir.setText(data_stack[1])
 
@@ -142,24 +143,25 @@ class MainWindow(Window):
                 for key, value in dict_items:
                     if value == data_stack[2]:
                         character_nir = key
-                
+
                 self.ui_window.form.character_nir.setCurrentText(character_nir)
-                
+
                 self.ui_window.form.cod_grnti.setText(data_stack[4])
                 self.ui_window.form.ruk_nir.setText(data_stack[5])
                 self.ui_window.form.post.setText(data_stack[6])
                 self.ui_window.form.financial.setValue(int(data_stack[7]))
                 self.ui_window.form.naming_nir.setText(data_stack[8])
-                
-                self.ui_window.form.agreeButton.clicked.connect(self.edit_button(int(data_stack[7]), selected_index[0], main_window))
+
+                self.ui_window.form.agreeButton.clicked.connect(
+                    self.edit_button(int(data_stack[7]), selected_index[0], main_window))
             else:
                 message_text = 'Не выбрана строка для редактирования или выбрано более одной!'
                 self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
                 self.ui_window.form.message.show()
                 self.new_window.close()
-                
-        self.ui_window.form.cancelButton.clicked.connect(self.new_window.close)  
-            
+
+        self.ui_window.form.cancelButton.clicked.connect(self.new_window.close)
+
     @helpers.send_args_inside_func
     def add_button(self, main_window):
         """Функция добавления строки."""
@@ -175,14 +177,14 @@ class MainWindow(Window):
         naming_nir = self.ui_window.form.naming_nir.toPlainText()
 
         error = 0
-        
-        if (reg_number_nir != '' and 
-            character_nir != '' and 
-            socr_naming != '' and
-            cod_grnti != '..' and 
-            ruk_nir != ' ..' and
-            post != '' and 
-            naming_nir != ''):
+
+        if (reg_number_nir != '' and
+                character_nir != '' and
+                socr_naming != '' and
+                cod_grnti != '..' and
+                ruk_nir != ' ..' and
+                post != '' and
+                naming_nir != ''):
 
             dict_items = config.dict_cod_vuz_socr_naming.items()
             for key, value in dict_items:
@@ -203,8 +205,8 @@ class MainWindow(Window):
                 self.ui_window.form.message.show()
                 error = 1
 
-            if ((len(cod_grnti)<6 or ' ' in cod_grnti or len(cod_grnti) == 7) or
-                (cod_grnti_2 != '..' and (len(cod_grnti_2)<6 or ' ' in cod_grnti_2 or len(cod_grnti_2) == 7))):
+            if ((len(cod_grnti) < 6 or ' ' in cod_grnti or len(cod_grnti) == 7) or
+                    (cod_grnti_2 != '..' and (len(cod_grnti_2) < 6 or ' ' in cod_grnti_2 or len(cod_grnti_2) == 7))):
                 message_text = f"""Проверьте правильность написания кода ГРНТИ:\n
                             1) Не должно быть пробелов в коде\n 
                             2) Минимальный код состоит из четырех цифр\n
@@ -213,23 +215,22 @@ class MainWindow(Window):
                 self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
                 self.ui_window.form.message.show()
                 error = 1
-            
+
             if config.dict_cod_vuz_socr_naming[cod_vuz] != socr_naming:
                 message_text = f'Данному коду ВУЗа соответсвует название: {config.dict_cod_vuz_socr_naming[cod_vuz]}'
                 self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
                 self.ui_window.form.message.show()
                 error = 1
-             
+
             if error == 0:
                 if len(cod_grnti) == 6:
                     cod_grnti = cod_grnti[:5]
-                    print(cod_grnti)
 
                 if cod_grnti_2 != '..':
                     if len(cod_grnti_2) == 6:
                         cod_grnti_2 = cod_grnti_2[:5]
                     cod_grnti = cod_grnti + ';' + cod_grnti_2
-                
+
                 query_tp_nir = f"""INSERT INTO Tp_nir (codvuz, rnw, f1, z2, f10, f6, f7, f18, f2) 
                     VALUES ({cod_vuz},'{reg_number_nir}','{config.dict_character_nir[character_nir]}','{socr_naming}','{cod_grnti}', '{ruk_nir}', '{post}',{financial},'{naming_nir}');"""
                 index = helpers.query_change_db(query_tp_nir)
@@ -253,12 +254,13 @@ class MainWindow(Window):
                                 """
                     helpers.query_change_db(query_tp_fv)
                 main_window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
-                
+
                 self.new_window.close()
-                main_window.form.ViewWidget.selectRow(index-1)
+                main_window.form.ViewWidget.selectRow(index - 1)
         else:
             message_text = 'Заполните все поля!'
-            self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка заполнения полей', message_text)
+            self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка заполнения полей',
+                                                      message_text)
             self.ui_window.form.message.show()
 
     @helpers.send_args_inside_func
@@ -274,15 +276,14 @@ class MainWindow(Window):
         post = self.ui_window.form.post.text()
         financial = self.ui_window.form.financial.value()
         naming_nir = self.ui_window.form.naming_nir.toPlainText()
-       
 
         error = 0
         if (
-            character_nir != '' and 
-            cod_grnti != '..' and 
-            ruk_nir != ' ..' and
-            post != '' and 
-            naming_nir != ''):
+                character_nir != '' and
+                cod_grnti != '..' and
+                ruk_nir != ' ..' and
+                post != '' and
+                naming_nir != ''):
 
             if financial <= 0:
                 message_text = 'Значение планового финансирования не может быть меньше или равно нулю!'
@@ -290,9 +291,8 @@ class MainWindow(Window):
                 self.ui_window.form.message.show()
                 error = 1
 
-
-            if ((len(cod_grnti)<6 or ' ' in cod_grnti or len(cod_grnti) == 7) or
-                (cod_grnti_2 != '..' and (len(cod_grnti_2)<6 or ' ' in cod_grnti_2 or len(cod_grnti_2) == 7))):
+            if ((len(cod_grnti) < 6 or ' ' in cod_grnti or len(cod_grnti) == 7) or
+                    (cod_grnti_2 != '..' and (len(cod_grnti_2) < 6 or ' ' in cod_grnti_2 or len(cod_grnti_2) == 7))):
                 message_text = f"""Проверьте правильность написания кода ГРНТИ:\n
                             1) Не должно быть пробелов в коде\n 
                             2) Минимальный код состоит из четырех цифр\n
@@ -301,9 +301,9 @@ class MainWindow(Window):
                 self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка', message_text)
                 self.ui_window.form.message.show()
                 error = 1
-            
+
             if error == 0:
-                
+
                 if len(cod_grnti) == 6:
                     cod_grnti = cod_grnti[:5]
 
@@ -324,9 +324,8 @@ class MainWindow(Window):
                                     f2 =  '{naming_nir}'
                                 WHERE codvuz = '{cod_vuz}' AND rnw = '{reg_number_nir}';"""
                 helpers.query_change_db(query_tp_nir)
-                
-                if fin0 != financial:
 
+                if fin0 != financial:
                     query_tp_fv = f"""
                                 UPDATE Tp_fv
                                 SET z3 = z3 - {fin0} + {financial}
@@ -334,12 +333,13 @@ class MainWindow(Window):
                                 """
                     helpers.query_change_db(query_tp_fv)
                 main_window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
-                
+
                 self.new_window.close()
                 main_window.form.ViewWidget.selectRow(index)
         else:
             message_text = 'Заполните все поля!'
-            self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка заполнения полей', message_text)
+            self.ui_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка заполнения полей',
+                                                      message_text)
             self.ui_window.form.message.show()
 
     @helpers.send_args_inside_func
@@ -380,9 +380,9 @@ class MainWindow(Window):
                                         """
                         helpers.query_change_db(query=query_tp_fv)
 
-
                     main_window.form.ViewWidget.model().removeRow(index)
-                    main_window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS, config.TP_NIR_COLUMN_WIDTH)
+                    main_window.show_table('Tp_nir', 'Информация о НИР', config.TP_NIR_HEADERS,
+                                           config.TP_NIR_COLUMN_WIDTH)
 
             else:
                 message_text = 'Удаление отменено'
@@ -397,19 +397,25 @@ class MainWindow(Window):
     def showFrame(self, qmenu):
         if qmenu == 'Data':
             self.form.analFrame.hide()
+            self.form.FinancialFrame.hide()
             self.form.Frame.show()
         elif qmenu == 'Analyses':
             self.form.Frame.hide()
+            self.form.FinancialFrame.hide()
             self.form.analFrame.show()
+        elif qmenu == 'Financial':
+            self.form.Frame.hide()
+            self.form.analFrame.hide()
+            self.form.FinancialFrame.show()
 
-    def constructor_table(self, tablename, column_widths, column_headers, data, itogo = bool):
+    def constructor_table(self, tablename, column_widths, column_headers, data, total=True):
         ###{tablenme = 'VUZ'/'har'/'grnti'
         # data = [column1, column2, ..., columnN] of 1-3 tables
         # itogo = True if need to add itogo to table}###
         getattr(self.form, f"Nirb{tablename}").clear()
         getattr(self.form, f"Nirb{tablename}").show()
-        if itogo:
-            getattr(self.form, f"Nirb{tablename}").setRowCount(len(data[0])+1)
+        if total:
+            getattr(self.form, f"Nirb{tablename}").setRowCount(len(data[0]) + 1)
         else:
             getattr(self.form, f"Nirb{tablename}").setRowCount(len(data[0]))
         getattr(self.form, f"Nirb{tablename}").setColumnCount(len(column_headers))
@@ -417,31 +423,34 @@ class MainWindow(Window):
         for column in range(len(data)):
             for row in range(len(data[column])):
                 item = QTableWidgetItem(str(data[column][row]))
-                item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                if type(data[column][row]) == int:
+                    item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+                else:
+                    item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
                 getattr(self.form, f"Nirb{tablename}").setItem(row, column, item)
-                if column == 1 and itogo:
+                if column == 1 and total:
                     itogo_num += data[column][row]
-                elif column == 2 and itogo:
+                elif column == 2 and total:
                     itogo_sumf += data[column][row]
             getattr(self.form, f"Nirb{tablename}").setColumnWidth(column, column_widths[column])
-            if itogo:
+            if total:
                 itogo_text = QTableWidgetItem('Итого:')
                 itogo_text.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
                 itogo_num_t = QTableWidgetItem(str(itogo_num))
-                itogo_num_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                itogo_num_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
                 itogo_sumf_t = QTableWidgetItem(str(itogo_sumf))
-                itogo_sumf_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+                itogo_sumf_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         getattr(self.form, f"Nirb{tablename}").setHorizontalHeaderLabels(column_headers)
         getattr(self.form, f"Nirb{tablename}").sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
-        if itogo:
-            getattr(self.form, f"Nirb{tablename}").setItem(row+1, 0, itogo_text)
-            getattr(self.form, f"Nirb{tablename}").setItem(row+1, 1, itogo_num_t)
-            getattr(self.form, f"Nirb{tablename}").setItem(row+1, 2, itogo_sumf_t)
+        if total:
+            getattr(self.form, f"Nirb{tablename}").setItem(row + 1, 0, itogo_text)
+            getattr(self.form, f"Nirb{tablename}").setItem(row + 1, 1, itogo_num_t)
+            getattr(self.form, f"Nirb{tablename}").setItem(row + 1, 2, itogo_sumf_t)
 
     @helpers.send_args_inside_func
     def create_tables(self, namewidget):
         qtable = getattr(self.form, f"{namewidget}")
-        data, items_z2, har, code, code_list, numworks_1tab, sumfin_1tab, harac =[], [], [], [], [], [], [], []
+        data, items_z2, har, code, code_list, numworks_1tab, sumfin_1tab, harac = [], [], [], [], [], [], [], []
         numworks_2tab, sumfin_2tab, numworks_3tab, sumfin_3tab, namegrnti = [], [], [], [], []
         for row in range(qtable.rowCount()):
             dat = []
@@ -473,7 +482,7 @@ class MainWindow(Window):
                     sumfin_1 += int(data[j][7])
             numworks_1tab.append(numworks_1)
             sumfin_1tab.append(sumfin_1)
-        table1=[items_z2, numworks_1tab, sumfin_1tab]
+        table1 = [items_z2, numworks_1tab, sumfin_1tab]
         for i in range(len(har)):
             if har[i] == 'Ф':
                 harac.append('Фундаментальное исследование')
@@ -492,7 +501,7 @@ class MainWindow(Window):
         table2 = [harac, numworks_2tab, sumfin_2tab]
         for j in range(len(code_list)):
             numworks_3 = 0
-            sumfin_3= 0
+            sumfin_3 = 0
             for i in range(len(data)):
                 s = data[i][4]
                 match = re.match(r"(\d{2}).*", s)
@@ -507,20 +516,22 @@ class MainWindow(Window):
             numworks_3tab.append(numworks_3)
             sumfin_3tab.append(sumfin_3)
             namegrnti.append(self.get_data('database.db',
-                                 query=f"""SELECT rubrika FROM grntirub WHERE codrub == '{code_list[j]}'""")[0][0])
+                                           query=f"""SELECT rubrika FROM grntirub WHERE codrub == '{code_list[j]}'""")[
+                                 0][0])
         table3 = [code_list, namegrnti, numworks_3tab, sumfin_3tab]
         self.constructor_table('VUZ', config.COLUMN_WIDTHS_NirbVUZ, config.HEADERS_NirbVUZ, table1, True)
         self.constructor_table('har', config.COLUMN_WIDTHS_Nirbhar, config.HEADERS_Nirbhar, table2, True)
         self.constructor_table('grnti', config.COLUMN_WIDTHS_Nirbgrnti, config.HEADERS_Nirbgrnti, table3, False)
 
-
-    def save_to_docx(self, qtable1, cond = None):
-        filename = QFileDialog.getSaveFileName(None,'Save File', '.', 'Документ Microsoft Word (*.docx)' )[0]
+    @helpers.send_args_inside_func
+    def save_to_docx(self, qtable1, window):
+        cond = window.condition
+        filename = QFileDialog.getSaveFileName(None, 'Save File', '.', 'Документ Microsoft Word (*.docx)')[0]
         if filename == '':
             return
         qtable = getattr(self.form, f"Nirb{qtable1}")
         doc = docx.Document()
-        fil_name = ['Федеральный округ: ','Субъект федерации: ','Город: ','ВУЗ: ','Первые цифры кода ГРНТИ: ']
+        fil_name = ['Федеральный округ: ', 'Субъект федерации: ', 'Город: ', 'ВУЗ: ', 'Первые цифры кода ГРНТИ: ']
         if qtable1 == 'VUZ':
             doc.add_heading('Распределение НИР по ВУЗам')
         elif qtable1 == 'grnti':
@@ -532,28 +543,31 @@ class MainWindow(Window):
             for fp in range(len(cond)):
                 if cond[fp]:
                     doc.add_paragraph(fil_name[fp] + cond[fp])
-        table = doc.add_table(rows = qtable.rowCount() + 1, cols = qtable.columnCount())
+        table = doc.add_table(rows=qtable.rowCount() + 1, cols=qtable.columnCount())
         table.style = 'Table Grid'
-        for i in range (qtable.columnCount()):
+        for i in range(qtable.columnCount()):
             table.cell(0, i).text = qtable.horizontalHeaderItem(i).text()
         for row in range(qtable.rowCount()):
             for col in range(qtable.columnCount()):
-                item = qtable.item(row,col)
+                item = qtable.item(row, col)
                 table.cell(row + 1, col).text = item.text() if item else ""
-        doc.add_paragraph('Общее число НИР: ' + str(self.get_data('database.db', f"""SELECT COUNT(f18) FROM Tp_nir""", log = False)[0][0]))
-        doc.add_paragraph('Общая сумма финансирования: ' + str(self.get_data('database.db', f"""SELECT SUM(f18) FROM Tp_nir""", log = False)[0][0]))
+        doc.add_paragraph('Общее число НИР: ' + str(
+            self.get_data('database.db', f"""SELECT COUNT(f18) FROM Tp_nir""", log=False)[0][0]))
+        doc.add_paragraph('Общая сумма финансирования: ' + str(
+            self.get_data('database.db', f"""SELECT SUM(f18) FROM Tp_nir""", log=False)[0][0]))
         doc.save(f"{filename}")
 
-
-    def print_filter(self, cond):
-        fil_name = ['Федеральный округ: ','Субъект федерации: ','Город: ','ВУЗ: ','Первые цифры кода ГРНТИ: ']
+    @helpers.send_args_inside_func
+    def print_filter(self, window):
+        cond = window.condition
+        fil_name = ['Федеральный округ: ', 'Субъект федерации: ', 'Город: ', 'ВУЗ: ', 'Первые цифры кода ГРНТИ: ']
         self.form.ApplFilter.clear()
         if cond:
             for fp in range(len(cond)):
                 if cond[fp]:
                     self.form.ApplFilter.append(fil_name[fp] + cond[fp])
-        summ = self.get_data('database.db', query=f"""SELECT SUM(f18) FROM Tp_nir""", log = False)
-        count = self.get_data('database.db', query=f"""SELECT COUNT(f18) FROM Tp_nir""", log = False)
+        summ = self.get_data('database.db', query=f"""SELECT SUM(f18) FROM Tp_nir""", log=False)
+        count = self.get_data('database.db', query=f"""SELECT COUNT(f18) FROM Tp_nir""", log=False)
         self.form.nirsum.setText('Общее число НИР: ' + str(count[0][0]))
         self.form.finsum.setText('Общая сумма финансирования: ' + str(summ[0][0]))
 
@@ -568,6 +582,10 @@ class FilterWindow(Window):
         self.query_template = '\n'.join(["SELECT DISTINCT {select_column}",
                                          "FROM Tp_nir JOIN VUZ ON Tp_nir.codvuz = VUZ.codvuz",
                                          "WHERE {column} = \"{value}\""])
+
+    def update_filter_data(self):
+        self.boxes_data = {"FO": [""], "Region": [""], "City": [""], "University": [""]}
+        self.condition = []
         for data in self.get_data(query="\n".join([f"SELECT DISTINCT {', '.join(self.column2widget)}",
                                                    "FROM VUZ JOIN Tp_nir ON VUZ.codvuz = Tp_nir.codvuz"])):
             self.boxes_data['FO'].append(data[0])
@@ -576,10 +594,15 @@ class FilterWindow(Window):
             self.boxes_data['University'].append(data[3])
 
         self.boxes_data = {k: sorted(set(v)) for k, v in self.boxes_data.items()}
-        self.form.comboBoxFO.addItems(self.boxes_data['FO'])
-        self.form.comboBoxRegion.addItems(self.boxes_data['Region'])
-        self.form.comboBoxCity.addItems(self.boxes_data['City'])
-        self.form.comboBoxUniversity.addItems(self.boxes_data['University'])
+        for key in self.boxes_data:
+            getattr(self.form, f"comboBox{key}").clear()
+            getattr(self.form, f"comboBox{key}").addItems(self.boxes_data[key])
+
+        # self.form.comboBoxFO.addItems(self.boxes_data['FO'])
+        # self.form.comboBoxRegion.addItems(self.boxes_data['Region'])
+        # self.form.comboBoxCity.addItems(self.boxes_data['City'])
+        # self.form.comboBoxUniversity.addItems(self.boxes_data['University'])
+        self.window.show()
 
     def get_combobox_values(self, target_column):
         query = []
