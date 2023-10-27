@@ -30,7 +30,6 @@ if __name__ == '__main__':
     main_window.form.Vuzaction.triggered.connect(main_window.showFrame('Data'))
     main_window.form.Grntiaction.triggered.connect(main_window.showFrame('Data'))
     main_window.form.Financialaction.triggered.connect(main_window.showFrame('Data'))
-    main_window.form.Financialaction_doc.triggered.connect(main_window.showFrame('Financial'))
 
     filter_window.form.comboBoxFO.currentTextChanged.connect(filter_window.combobox_filter("oblname"))
     filter_window.form.comboBoxRegion.currentTextChanged.connect(filter_window.combobox_filter("city"))
@@ -46,7 +45,6 @@ if __name__ == '__main__':
 
     main_window.form.resetFiltersButton.setEnabled(False)
     main_window.form.resetFiltersButton.clicked.connect(main_window.reset_filters(filter_window))
-    # main_window.form.resetFiltersButton.clicked.connect(lambda: filter_window.condition.clear())
     main_window.form.Exaction.triggered.connect(exit_window.window.show)
 
     exit_window.form.agreeButton.clicked.connect(wnd.Window.close(main_window,
@@ -70,4 +68,10 @@ if __name__ == '__main__':
                                                                             filter_window))
     main_window.form.saveNirbhar.clicked.connect(main_window.save_to_docx('har',
                                                                           filter_window))
+    
+    
+    main_window.form.Financialaction_doc.triggered.connect(main_window.showFrame('Financial'))
+    main_window.form.saveUtverdit.clicked.connect(main_window.save_to_docx('Financial',
+                                                                          filter_window))
     app.exec()
+    

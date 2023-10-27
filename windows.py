@@ -8,7 +8,7 @@ import config
 import helpers
 import docx
 import re
-
+import datetime
 
 class Window:
     def __init__(self, ui) -> None:
@@ -529,7 +529,10 @@ class MainWindow(Window):
         filename = QFileDialog.getSaveFileName(None, 'Save File', '.', 'Документ Microsoft Word (*.docx)')[0]
         if filename == '':
             return
-        qtable = getattr(self.form, f"Nirb{qtable1}")
+        if qtable1 == 'Financial':
+            qtable = getattr(self.form, f"{qtable1}Utverdit")
+        else:
+            qtable = getattr(self.form, f"Nirb{qtable1}")
         doc = docx.Document()
         fil_name = ['Федеральный округ: ', 'Субъект федерации: ', 'Город: ', 'ВУЗ: ', 'Первые цифры кода ГРНТИ: ']
         if qtable1 == 'VUZ':
@@ -538,6 +541,9 @@ class MainWindow(Window):
             doc.add_heading('Распределение НИР по коду ГРНТИ')
         elif qtable1 == 'har':
             doc.add_heading('Распределение НИР по характеру')
+        elif qtable1 == 'Financial':
+            doc.add_heading('Распоряжение по финансированию ВУЗов')
+            cond = 0
         if cond:
             doc.add_paragraph('Примененные фильтры')
             for fp in range(len(cond)):
@@ -551,10 +557,13 @@ class MainWindow(Window):
             for col in range(qtable.columnCount()):
                 item = qtable.item(row, col)
                 table.cell(row + 1, col).text = item.text() if item else ""
-        doc.add_paragraph('Общее число НИР: ' + str(
-            self.get_data('database.db', f"""SELECT COUNT(f18) FROM Tp_nir""", log=False)[0][0]))
-        doc.add_paragraph('Общая сумма финансирования: ' + str(
-            self.get_data('database.db', f"""SELECT SUM(f18) FROM Tp_nir""", log=False)[0][0]))
+        if qtable1 != 'Financial':
+            doc.add_paragraph('Общее число НИР: ' + str(
+                self.get_data('database.db', f"""SELECT COUNT(f18) FROM Tp_nir""", log=False)[0][0]))
+            doc.add_paragraph('Общая сумма планового финансирования: ' + str(
+                self.get_data('database.db', f"""SELECT SUM(f18) FROM Tp_nir""", log=False)[0][0]))
+        else:
+            doc.add_paragraph('Распоряжение от: '+ datetime.date.today().isoformat())
         doc.save(f"{filename}")
 
     @helpers.send_args_inside_func
