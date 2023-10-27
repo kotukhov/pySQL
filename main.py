@@ -12,7 +12,7 @@ if __name__ == '__main__':
     main_window.form.Frame.hide()
     main_window.form.analFrame.hide()
     main_window.form.FinancialFrame.hide()
-
+    main_window.form.helpframe.hide()
     shadow_show_table = helpers.send_args_inside_func(main_window.show_table)
     main_window.form.Niraction.triggered.connect(main_window.sort_selected)
     main_window.form.Niraction.triggered.connect(main_window.form.horizontalFrame.show)
@@ -30,6 +30,7 @@ if __name__ == '__main__':
     main_window.form.Vuzaction.triggered.connect(main_window.showFrame('Data'))
     main_window.form.Grntiaction.triggered.connect(main_window.showFrame('Data'))
     main_window.form.Financialaction.triggered.connect(main_window.showFrame('Data'))
+    main_window.form.help.triggered.connect(main_window.showFrame('Help'))
 
     filter_window.form.comboBoxFO.currentTextChanged.connect(filter_window.combobox_filter("oblname"))
     filter_window.form.comboBoxRegion.currentTextChanged.connect(filter_window.combobox_filter("city"))

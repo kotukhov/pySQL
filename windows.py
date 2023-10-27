@@ -398,15 +398,24 @@ class MainWindow(Window):
         if qmenu == 'Data':
             self.form.analFrame.hide()
             self.form.FinancialFrame.hide()
+            self.form.helpframe.hide()
             self.form.Frame.show()
         elif qmenu == 'Analyses':
             self.form.Frame.hide()
             self.form.FinancialFrame.hide()
+            self.form.helpframe.hide()
             self.form.analFrame.show()
         elif qmenu == 'Financial':
             self.form.Frame.hide()
             self.form.analFrame.hide()
+            self.form.helpframe.hide()
             self.form.FinancialFrame.show()
+        elif qmenu == 'Help':
+            self.form.Frame.hide()
+            self.form.FinancialFrame.hide()
+            self.form.analFrame.hide()
+            self.form.helpframe.show()
+
 
     def constructor_table(self, tablename, column_widths, column_headers, data, total=True):
         ###{tablenme = 'VUZ'/'har'/'grnti'
