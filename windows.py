@@ -9,6 +9,11 @@ import helpers
 import docx
 import re
 import datetime
+# from main import main_window
+
+planfact = []
+socr_naming_list = []
+str_financial_order = True
 
 class Window:
     def __init__(self, ui) -> None:
@@ -421,14 +426,14 @@ class MainWindow(Window):
         ###{tablenme = 'VUZ'/'har'/'grnti'
         # data = [column1, column2, ..., columnN] of 1-3 tables
         # itogo = True if need to add itogo to table}###
-        getattr(self.form, f"Nirb{tablename}").clear()
-        getattr(self.form, f"Nirb{tablename}").show()
+        getattr(self.form, f"{tablename}").clear()
+        getattr(self.form, f"{tablename}").show()
         if total:
-            getattr(self.form, f"Nirb{tablename}").setRowCount(len(data[0]) + 1)
+            getattr(self.form, f"{tablename}").setRowCount(len(data[0]) + 1)
         else:
-            getattr(self.form, f"Nirb{tablename}").setRowCount(len(data[0]))
-        getattr(self.form, f"Nirb{tablename}").setColumnCount(len(column_headers))
-        itogo_num, itogo_sumf = 0, 0
+            getattr(self.form, f"{tablename}").setRowCount(len(data[0]))
+        getattr(self.form, f"{tablename}").setColumnCount(len(column_headers))
+        itogo_1, itogo_2 = 0, 0
         for column in range(len(data)):
             for row in range(len(data[column])):
                 item = QTableWidgetItem(str(data[column][row]))
@@ -436,25 +441,26 @@ class MainWindow(Window):
                     item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
                 else:
                     item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-                getattr(self.form, f"Nirb{tablename}").setItem(row, column, item)
+                getattr(self.form, f"{tablename}").setItem(row, column, item)
                 if column == 1 and total:
-                    itogo_num += data[column][row]
+                    itogo_1 += data[column][row]
                 elif column == 2 and total:
-                    itogo_sumf += data[column][row]
-            getattr(self.form, f"Nirb{tablename}").setColumnWidth(column, column_widths[column])
-            if total:
-                itogo_text = QTableWidgetItem('Итого:')
-                itogo_text.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-                itogo_num_t = QTableWidgetItem(str(itogo_num))
-                itogo_num_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-                itogo_sumf_t = QTableWidgetItem(str(itogo_sumf))
-                itogo_sumf_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-        getattr(self.form, f"Nirb{tablename}").setHorizontalHeaderLabels(column_headers)
-        getattr(self.form, f"Nirb{tablename}").sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
+                    itogo_2 += data[column][row]
+            getattr(self.form, f"{tablename}").setColumnWidth(column, column_widths[column])
+        getattr(self.form, f"{tablename}").setHorizontalHeaderLabels(column_headers)
+        getattr(self.form, f"{tablename}").sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
         if total:
-            getattr(self.form, f"Nirb{tablename}").setItem(row + 1, 0, itogo_text)
-            getattr(self.form, f"Nirb{tablename}").setItem(row + 1, 1, itogo_num_t)
-            getattr(self.form, f"Nirb{tablename}").setItem(row + 1, 2, itogo_sumf_t)
+            itogo_t = QTableWidgetItem('Итого:')
+            itogo_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+            itogo_1_t = QTableWidgetItem(str(itogo_1))
+            itogo_1_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+            getattr(self.form, f"{tablename}").setItem(row + 1, 0, itogo_t)
+            getattr(self.form, f"{tablename}").setItem(row + 1, 1, itogo_1_t)
+            if itogo_2:
+                itogo_2_t = QTableWidgetItem(str(itogo_2))
+                itogo_2_t.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+                getattr(self.form, f"{tablename}").setItem(row + 1, 2, itogo_2_t)
+
 
     @helpers.send_args_inside_func
     def create_tables(self, namewidget):
@@ -525,55 +531,66 @@ class MainWindow(Window):
             numworks_3tab.append(numworks_3)
             sumfin_3tab.append(sumfin_3)
             namegrnti.append(self.get_data('database.db',
-                                           query=f"""SELECT rubrika FROM grntirub WHERE codrub == '{code_list[j]}'""")[
-                                 0][0])
+                                           query=f"""SELECT rubrika FROM grntirub WHERE codrub == '{code_list[j]}'""")[0][0])
+        
         table3 = [code_list, namegrnti, numworks_3tab, sumfin_3tab]
-        self.constructor_table('VUZ', config.COLUMN_WIDTHS_NirbVUZ, config.HEADERS_NirbVUZ, table1, True)
-        self.constructor_table('har', config.COLUMN_WIDTHS_Nirbhar, config.HEADERS_Nirbhar, table2, True)
-        self.constructor_table('grnti', config.COLUMN_WIDTHS_Nirbgrnti, config.HEADERS_Nirbgrnti, table3, False)
+        self.constructor_table('NirbVUZ', config.COLUMN_WIDTHS_NirbVUZ, config.HEADERS_NirbVUZ, table1, True)
+        self.constructor_table('Nirbhar', config.COLUMN_WIDTHS_Nirbhar, config.HEADERS_Nirbhar, table2, True)
+        self.constructor_table('Nirbgrnti', config.COLUMN_WIDTHS_Nirbgrnti, config.HEADERS_Nirbgrnti, table3, False)
 
     @helpers.send_args_inside_func
-    def save_to_docx(self, qtable1, window):
-        cond = window.condition
-        filename = QFileDialog.getSaveFileName(None, 'Save File', '.', 'Документ Microsoft Word (*.docx)')[0]
-        if filename == '':
-            return
-        if qtable1 == 'Financial':
-            qtable = getattr(self.form, f"{qtable1}Utverdit")
-        else:
-            qtable = getattr(self.form, f"Nirb{qtable1}")
-        doc = docx.Document()
-        fil_name = ['Федеральный округ: ', 'Субъект федерации: ', 'Город: ', 'ВУЗ: ', 'Первые цифры кода ГРНТИ: ']
-        if qtable1 == 'VUZ':
-            doc.add_heading('Распределение НИР по ВУЗам')
-        elif qtable1 == 'grnti':
-            doc.add_heading('Распределение НИР по коду ГРНТИ')
-        elif qtable1 == 'har':
-            doc.add_heading('Распределение НИР по характеру')
-        elif qtable1 == 'Financial':
-            doc.add_heading('Распоряжение по финансированию ВУЗов')
-            cond = 0
-        if cond:
-            doc.add_paragraph('Примененные фильтры')
-            for fp in range(len(cond)):
-                if cond[fp]:
-                    doc.add_paragraph(fil_name[fp] + cond[fp])
-        table = doc.add_table(rows=qtable.rowCount() + 1, cols=qtable.columnCount())
-        table.style = 'Table Grid'
-        for i in range(qtable.columnCount()):
-            table.cell(0, i).text = qtable.horizontalHeaderItem(i).text()
-        for row in range(qtable.rowCount()):
-            for col in range(qtable.columnCount()):
-                item = qtable.item(row, col)
-                table.cell(row + 1, col).text = item.text() if item else ""
-        if qtable1 != 'Financial':
-            doc.add_paragraph('Общее число НИР: ' + str(
-                self.get_data('database.db', f"""SELECT COUNT(f18) FROM Tp_nir""", log=False)[0][0]))
-            doc.add_paragraph('Общая сумма планового финансирования: ' + str(
-                self.get_data('database.db', f"""SELECT SUM(f18) FROM Tp_nir""", log=False)[0][0]))
-        else:
-            doc.add_paragraph('Распоряжение от: '+ datetime.date.today().isoformat())
-        doc.save(f"{filename}")
+    def save_to_docx(self, qtable1, window, utverdit=None, main_window=None):
+        flag = True
+
+        if utverdit != None:
+            if (planfact == [] and socr_naming_list == []) or str_financial_order is True:
+                message_text = 'Не заполнены поля для рассчета фактического плана финансирования!'
+                main_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка заполнения полей',
+                                                       message_text)
+                main_window.form.message.show()
+                flag = False
+
+        if flag:
+            cond = window.condition
+            filename = QFileDialog.getSaveFileName(None, 'Save File', '.', 'Документ Microsoft Word (*.docx)')[0]
+            if filename == '':
+                return
+            if qtable1 == 'Financial':
+                qtable = getattr(self.form, f"{qtable1}Utverdit")
+            else:
+                qtable = getattr(self.form, f"Nirb{qtable1}")
+            doc = docx.Document()
+            fil_name = ['Федеральный округ: ', 'Субъект федерации: ', 'Город: ', 'ВУЗ: ', 'Первые цифры кода ГРНТИ: ']
+            if qtable1 == 'VUZ':
+                doc.add_heading('Распределение НИР по ВУЗам')
+            elif qtable1 == 'grnti':
+                doc.add_heading('Распределение НИР по коду ГРНТИ')
+            elif qtable1 == 'har':
+                doc.add_heading('Распределение НИР по характеру')
+            elif qtable1 == 'Financial':
+                doc.add_heading('Распоряжение по финансированию ВУЗов')
+                cond = 0
+            if cond:
+                doc.add_paragraph('Примененные фильтры')
+                for fp in range(len(cond)):
+                    if cond[fp]:
+                        doc.add_paragraph(fil_name[fp] + cond[fp])
+            table = doc.add_table(rows=qtable.rowCount() + 1, cols=qtable.columnCount())
+            table.style = 'Table Grid'
+            for i in range(qtable.columnCount()):
+                table.cell(0, i).text = qtable.horizontalHeaderItem(i).text()
+            for row in range(qtable.rowCount()):
+                for col in range(qtable.columnCount()):
+                    item = qtable.item(row, col)
+                    table.cell(row + 1, col).text = item.text() if item else ""
+            if qtable1 != 'Financial':
+                doc.add_paragraph('Общее число НИР: ' + str(
+                    self.get_data('database.db', f"""SELECT COUNT(f18) FROM Tp_nir""", log=False)[0][0]))
+                doc.add_paragraph('Общая сумма планового финансирования: ' + str(
+                    self.get_data('database.db', f"""SELECT SUM(f18) FROM Tp_nir""", log=False)[0][0]))
+            else:
+                doc.add_paragraph('Распоряжение от: '+ datetime.date.today().isoformat())
+            doc.save(f"{filename}")
 
     @helpers.send_args_inside_func
     def print_filter(self, window):
@@ -589,6 +606,185 @@ class MainWindow(Window):
         self.form.nirsum.setText('Общее число НИР: ' + str(count[0][0]))
         self.form.finsum.setText('Общая сумма финансирования: ' + str(summ[0][0]))
 
+    @helpers.send_args_inside_func
+    def create_finacial_tables(self, main_window):
+        """Функция создания таблицы финансирования"""
+
+        query_to_tp_fv = """SELECT z2 FROM Tp_fv"""
+        socr_naming = self.get_data('database.db', query=query_to_tp_fv, log=False)
+        socr_naming_list = []
+        for i in range(len(socr_naming)):
+            socr_naming_list.append(socr_naming[i][0])
+
+        query_to_tp_fv = """SELECT COUNT(*) FROM Tp_fv"""
+        sumfact = self.get_data('database.db', query=query_to_tp_fv, log=False)
+        sumfact_list = [0]*sumfact[0][0]
+        
+        data = [socr_naming_list, sumfact_list]
+
+        self.constructor_table('FinancialUtverdit', (180, 160), ('Сокращенное название ВУЗа', 'Размер финансирования'), data)
+
+    @helpers.send_args_inside_func
+    def financing_order(self, main_window):
+        """Функция, отвечающая за окно финансовое распоряжение."""
+        
+        # заполнение полей
+        global str_financial_order
+        str_financial_order = True
+
+        target_nir = self.get_data('database.db', query=f"""SELECT SUM(numworks) FROM Tp_fv""", log=False)
+        main_window.form.targetNir.setText(str(target_nir[0][0]))
+
+        target_vuz = self.get_data('database.db', query=f"""SELECT COUNT(*) FROM Tp_fv""", log=False)
+        main_window.form.targetVuz.setText(str(target_vuz[0][0]))
+
+        targetsumplan = self.get_data('database.db', query=f"""SELECT SUM(z3) FROM Tp_fv""", log=False)
+        main_window.form.targetsumplan.setText(str(targetsumplan[0][0]))
+
+        targetsumfact = self.get_data('database.db', query=f"""SELECT SUM(z18) FROM Tp_fv""", log=False)
+        targetsumfact = targetsumfact[0][0]
+        if targetsumfact == None:
+            targetsumfact = 0
+        main_window.form.targetsumfact.setText(str(targetsumfact))
+
+        try: 
+            procfact = round(targetsumfact / targetsumplan[0][0] * 100, 2)
+        except ZeroDivisionError:
+            procfact = 0
+        if procfact == -0.0:
+            procfact = 0.0
+        main_window.form.procfact.setText(str(procfact))
+        
+        # заполнение полей 'сумма к распределению' или '% от планового'  
+        main_window.form.Calculation.clicked.connect(main_window.calculation(main_window,
+                                                                             targetsumplan[0][0]))
+    
+    @helpers.send_args_inside_func
+    def calculation(self, main_window, targetsumplan: int):
+        """Функция кнопки 'Рассчитать'. """
+
+        sumplan = main_window.form.sumplan.text()
+        procplan = main_window.form.procplan.text()
+
+        flag = 0
+        # глобальная переменная, которая обозначает, что пользователь зашел на страницу финансирования
+        # и больше никаких действий не сделал
+        global str_financial_order
+        str_financial_order =False
+
+        if sumplan != '' and procplan != '':
+            sumplan = round(targetsumplan*float(procplan)//100)
+            main_window.form.sumplan.setText(str(sumplan))
+
+        if sumplan == '' and procplan == '':
+            message_text = 'Заполните поля!'
+            main_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка заполнения полей',
+                                                   message_text)
+            main_window.form.message.show()
+
+            flag = 1 
+
+        if procplan != '' and sumplan == '':
+            print(sumplan)
+            if round(float(procplan),2) < 0.01 and round(float(procplan),2) > -0.01:
+                message_text = 'Слишком маленький процент финансирования / обратного финансирования (меньше 0.01 %)!'
+                main_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка заполнения полей',
+                                                       message_text)
+                main_window.form.message.show()
+                main_window.form.sumplan.setText('')
+
+                flag = 1
+
+        if procplan == '' and sumplan != '':
+            procplan = round(int(sumplan) / targetsumplan*100, 2)
+            main_window.form.procplan.setText(str(procplan))
+            if round(float(procplan),2) < 0.01 and round(float(procplan),2) > -0.01:
+                message_text = 'Слишком маленький процент финансирования / обратного финансирования (меньше 0.01 %)!'
+                main_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка заполнения полей',
+                                                       message_text)
+                main_window.form.message.show()
+                main_window.form.procplan.setText('')
+
+                flag = 1
+
+        if sumplan == '' and procplan != '' and flag == 0:
+            print(sumplan)
+            sumplan = round(targetsumplan*float(procplan)//100)
+            main_window.form.sumplan.setText(str(sumplan))
+
+        if flag == 0:
+            targetsumplan = self.get_data('database.db', query=f"""SELECT SUM(z3) FROM Tp_fv""", log=False)
+            targetsumplan = targetsumplan[0][0]
+
+            targetsumfact = self.get_data('database.db', query=f"""SELECT SUM(z18) FROM Tp_fv""", log=False)
+            targetsumfact = targetsumfact[0][0]
+            try: 
+                procfact = round(targetsumfact / targetsumplan * 100, 2)
+            except ZeroDivisionError:
+                procfact = 0
+            if procfact == -0.0:
+                procfact = 0.0
+
+            global main_percent_procfact 
+            main_percent_procfact=procfact # float с округлением до 2х цифр после запятой
+            
+            query_to_tp_fv = """SELECT z2, z3 FROM Tp_fv"""
+            data_tp_fv_z2_z3 = self.get_data('database.db', query=query_to_tp_fv, log=False)
+
+            global socr_naming_list
+            socr_naming_list = []
+
+            global planfact
+            planfact = []
+
+            global dop_percent_procplan 
+            dop_percent_procplan = round(float(procplan), 2)
+
+            for i in range(len(data_tp_fv_z2_z3)):
+                socr_naming_list.append(data_tp_fv_z2_z3[i][0])
+                planfact.append(round(data_tp_fv_z2_z3[i][1]*float(procplan)//100))
+            data = [socr_naming_list, planfact]
+            self.constructor_table('FinancialUtverdit', (180, 160), ('Сокращенное название ВУЗа', 'Размер финансирования'), data)
+
+
+
+    @helpers.send_args_inside_func
+    def utverdit(self, main_window):
+        """Кнопка утверждения приказа."""
+        
+        if (planfact == [] and socr_naming_list == []) or str_financial_order is True:
+            message_text = 'Не заполнены поля для рассчета фактического плана финансирования!'
+            main_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка заполнения полей',
+                                                   message_text)
+            main_window.form.message.show()
+        else:
+            if (dop_percent_procplan + main_percent_procfact) < 0:
+                message_text = 'Суммарный процент от планового финансирования не может быть меньше нуля!'
+                main_window.form.message = QMessageBox(QMessageBox.Icon.Critical, 'Ошибка заполнения полей',
+                                                        message_text)
+                main_window.form.message.show()
+            else: 
+
+                helpers.query_change_db(fact=True, socr_naming=True)
+                targetsumplan = self.get_data('database.db', query=f"""SELECT SUM(z3) FROM Tp_fv""", log=False)
+                targetsumfact = self.get_data('database.db', query=f"""SELECT SUM(z18) FROM Tp_fv""", log=False)
+                targetsumfact = targetsumfact[0][0]
+                
+                try: 
+                    procfact = round(targetsumfact / targetsumplan[0][0] * 100, 2)
+                except ZeroDivisionError:
+                    procfact = 0
+                if procfact == -0.0:
+                    procfact = 0.0
+
+                main_window.form.targetsumfact.setText(str(targetsumfact))
+                main_window.form.procfact.setText(str(procfact))
+                
+                message_text = ("Приказ о финансировании успешно утвержден!")
+                main_window.form.message = QMessageBox(QMessageBox.Icon.Information, 'Успешное выполение', message_text)
+                main_window.form.message.setStandardButtons(QMessageBox.StandardButton.Ok)
+                main_window.form.message.show()
+
 
 class FilterWindow(Window):
     def __init__(self, ui) -> None:
@@ -600,9 +796,6 @@ class FilterWindow(Window):
         self.query_template = '\n'.join(["SELECT DISTINCT {select_column}",
                                          "FROM Tp_nir JOIN VUZ ON Tp_nir.codvuz = VUZ.codvuz",
                                          "WHERE {column} = \"{value}\""])
-
-    def update_filter_data(self):
-        self.boxes_data = {"FO": [""], "Region": [""], "City": [""], "University": [""]}
         self.condition = []
         for data in self.get_data(query="\n".join([f"SELECT DISTINCT {', '.join(self.column2widget)}",
                                                    "FROM VUZ JOIN Tp_nir ON VUZ.codvuz = Tp_nir.codvuz"])):
@@ -612,14 +805,32 @@ class FilterWindow(Window):
             self.boxes_data['University'].append(data[3])
 
         self.boxes_data = {k: sorted(set(v)) for k, v in self.boxes_data.items()}
-        for key in self.boxes_data:
-            getattr(self.form, f"comboBox{key}").clear()
-            getattr(self.form, f"comboBox{key}").addItems(self.boxes_data[key])
+        for level, data in self.boxes_data.items():
+            getattr(self.form, f"comboBox{level}").addItems(data)
 
-        # self.form.comboBoxFO.addItems(self.boxes_data['FO'])
-        # self.form.comboBoxRegion.addItems(self.boxes_data['Region'])
-        # self.form.comboBoxCity.addItems(self.boxes_data['City'])
-        # self.form.comboBoxUniversity.addItems(self.boxes_data['University'])
+    def update_filter_data(self):
+        self.condition = []
+        boxes_data = {"FO": [""], "Region": [""], "City": [""], "University": [""]}
+        for data in self.get_data(query="\n".join([f"SELECT DISTINCT {', '.join(self.column2widget)}",
+                                                   "FROM VUZ JOIN Tp_nir ON VUZ.codvuz = Tp_nir.codvuz"])):
+            boxes_data['FO'].append(data[0])
+            boxes_data['Region'].append(data[1])
+            boxes_data['City'].append(data[2])
+            boxes_data['University'].append(data[3])
+
+        boxes_data = {k: sorted(set(v)) for k, v in boxes_data.items()}
+        levels_for_update = [level for level, data in boxes_data.items() if (
+                    1 < len(self.boxes_data[level]) != len(data))]
+        for key in levels_for_update:
+            buffer = getattr(self.form, f"comboBox{key}").currentText()
+            getattr(self.form, f"comboBox{key}").clear()
+            getattr(self.form, f"comboBox{key}").addItems(boxes_data[key])
+            i = getattr(self.form, f"comboBox{key}").findText(buffer)
+            if i < 0:
+                i = 0
+            getattr(self.form, f"comboBox{key}").setCurrentIndex(i)
+            self.boxes_data[key] = boxes_data[key]
+
         self.window.show()
 
     def get_combobox_values(self, target_column):

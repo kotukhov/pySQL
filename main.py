@@ -72,7 +72,12 @@ if __name__ == '__main__':
     
     
     main_window.form.Financialaction_doc.triggered.connect(main_window.showFrame('Financial'))
+    main_window.form.Financialaction_doc.triggered.connect(main_window.financing_order(main_window))
+    main_window.form.Financialaction_doc.triggered.connect(main_window.create_finacial_tables(main_window))
     main_window.form.saveUtverdit.clicked.connect(main_window.save_to_docx('Financial',
-                                                                          filter_window))
+                                                                          filter_window,
+                                                                          utverdit=1, 
+                                                                          main_window=main_window))
+    main_window.form.Utverdit.clicked.connect(main_window.utverdit(main_window))
     app.exec()
     

@@ -1,5 +1,6 @@
 import sqlite3
 import config
+import windows
 
 
 def send_args_inside_func(func):
@@ -25,18 +26,29 @@ def get_headers(table, query=None):
     return data
 
 
-def query_change_db(query):
+def query_change_db(query=None, socr_naming=False, fact=False):
     """Запросы на изменения таблицы"""
     conn = sqlite3.connect(config.DB_NAME)
     cursor = conn.cursor()
-    cursor.execute(query)
-    if 'INSERT INTO' in query:
-        index = cursor.lastrowid
+   
+    if query != None:
+        cursor.execute(query)
+
+        if 'INSERT INTO' in query:
+            index = cursor.lastrowid
+            conn.commit()
+            conn.close()
+            return index
+        
         conn.commit()
         conn.close()
-        return index
 
-    conn.commit()
+    if socr_naming and fact:
+        for i in range(len(windows.planfact)):
+            query = f"""UPDATE Tp_fv SET z18 = z18 + {windows.planfact[i]} WHERE z2 = '{windows.socr_naming_list[i]}';"""
+            cursor.execute(query)
+            conn.commit()
+        conn.close()
     conn.close()
 
 
